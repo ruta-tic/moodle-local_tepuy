@@ -85,7 +85,14 @@ if ($groupmode = groups_get_activity_groupmode($cm)) {   // Groups are being use
         }
         $groupname = $group->name;
     } else {
-        $groupname = get_string('allparticipants');
+        if ($groups = groups_get_activity_allowed_groups($cm)) {
+            $group = reset($groups);
+
+            $groupid = $group->id;
+            $groupname = $group->name;
+        } else {
+            $groupname = get_string('allparticipants');
+        }
     }
 } else {
     $groupid = 0;

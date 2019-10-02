@@ -29,7 +29,7 @@ use Tepuy\SocketController;
 
 // Moodle controller code.
 define('CLI_SCRIPT', true);
-require_once('../../../../../config.php');
+require_once(__DIR__ . '/../../../../../config.php');
 // End Moodle controller code.
 
 define("APP_SOURCE_PATH", __DIR__."/src");

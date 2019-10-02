@@ -28,7 +28,8 @@ use Tepuy\GameAngi;
 class Action {
 
     // The only valid actions.
-    public const AVAILABLES = array('chatmsg', 'chathistory', 'gamestate');
+    public const AVAILABLES = array('chatmsg', 'chathistory', 'gamestate', 'playcard',
+                                    'endcase', 'playerconnected', 'playerdisconnected');
 
     public $action;
 
@@ -156,7 +157,6 @@ class Action {
     }
 
     private function action_gamestate() {
-        global $CFG, $DB;
 
         if (!$this->session->groupid) {
             Messages::error('notgroupnotteam', null, $this->from);
@@ -164,7 +164,7 @@ class Action {
 
         $game = new GameAngi($this->session->groupid);
 
-        $current = $game->getCurrentCase();
+        $current = $game->currentCase();
 
         $data = new \stdClass();
         $data->currenttime = time();
@@ -196,6 +196,123 @@ class Action {
         $this->from->send($msg);
 
         Logging::trace(Logging::LVL_DETAIL, 'Game state sended.');
+
+        return true;
+    }
+
+    private function action_playcard() {
+
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        if (!property_exists($this->request, 'data') ||
+                !property_exists($this->request->data, 'cardcode') ||
+                !property_exists($this->request->data, 'cardtype')
+            ) {
+
+            Messages::error('cardcodeandtyperequired', null, $this->from);
+        }
+
+        $game = new GameAngi($this->session->groupid);
+
+        try {
+            $game->playCard($this->request->data->cardcode, $this->request->data->cardtype, $this->user->id);
+        } catch (ByCodeException $ce) {
+            Messages::error($ce->getMessage(), null, $this->from);
+        }
+
+        $data = new \stdClass();
+        $data->timestamp = time();
+        $data->userid = $this->user->id;
+        $data->cardtype = $this->request->data->cardtype;
+        $data->cardcode = $this->request->data->cardcode;
+
+        $msg = $this->getResponse($data);
+        $msg = json_encode($msg);
+
+        foreach ($this->controller->clients as $client) {
+            if ($client !== $this->from &&
+                    $this->controller->skeys[$client->resourceId]->groupid == $this->session->groupid) {
+                // The sender is not the receiver, send to each client connected into same group.
+                $client->send($msg);
+            }
+        }
+
+        Logging::trace(Logging::LVL_DETAIL, 'Card played.');
+
+        return true;
+    }
+
+    private function action_endcase() {
+
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        $game = new GameAngi($this->session->groupid);
+
+        $game->endCurrentCase();
+
+        $msg = $this->getResponse(null);
+        $msg = json_encode($msg);
+
+        foreach ($this->controller->clients as $client) {
+            if ($this->controller->skeys[$client->resourceId]->groupid == $this->session->groupid) {
+                // Send to each client connected into same group, including the sender.
+                $client->send($msg);
+            }
+        }
+
+        Logging::trace(Logging::LVL_DETAIL, 'Case ended.');
+
+        return true;
+    }
+
+    private function action_playerconnected() {
+
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        $data = new \stdClass();
+        $data->id = $this->user->id;
+        $data->name = $this->user->firstname;
+
+        $msg = $this->getResponse($data);
+        $msg = json_encode($msg);
+
+        foreach ($this->controller->clients as $client) {
+            if ($client !== $this->from &&
+                    $this->controller->skeys[$client->resourceId]->groupid == $this->session->groupid) {
+                // The sender is not the receiver, send to each client connected into same group.
+                $client->send($msg);
+            }
+        }
+
+        return true;
+    }
+
+    private function action_playerdisconnected() {
+
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        $data = new \stdClass();
+        $data->id = $this->user->id;
+        $data->name = $this->user->firstname;
+
+        $msg = $this->getResponse($data);
+        $msg = json_encode($msg);
+
+        foreach ($this->controller->clients as $client) {
+            if ($client !== $this->from &&
+                    $this->controller->skeys[$client->resourceId]->groupid == $this->session->groupid) {
+                // The sender is not the receiver, send to each client connected into same group.
+                $client->send($msg);
+            }
+        }
 
         return true;
     }

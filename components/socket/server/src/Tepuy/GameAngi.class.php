@@ -28,6 +28,7 @@ class GameAngi {
 
     public $groupid;
 
+    // The cases and cards codes. A card by case.
     public const CASES = array('john', 'natalia', 'hermes', 'santiago', 'nairobi');
     public const ROLES = array('planner', 'tech', 'media', 'red', 'master');
 
@@ -35,6 +36,9 @@ class GameAngi {
     public const STATE_PASSED = 'passed';
     public const STATE_FAILED = 'failed';
     public const STATE_ACTIVE = 'active';
+
+    // Only for game state.
+    public const STATE_ENDED = 'ended';
 
     public $summary;
 
@@ -67,7 +71,7 @@ class GameAngi {
         return $res;
     }
 
-    public function getCurrentCase() {
+    public function currentCase() {
 
         foreach($this->summary->cases as $case) {
             if ($case->state == self::STATE_ACTIVE) {
@@ -109,7 +113,124 @@ class GameAngi {
         $params['caseid'] = $case->id;
         $params['attempt'] = $case->attempt;
 
-        $cards = $DB->get_records('local_tepuy_gameangi_cards', $params);
+        return $DB->get_records('local_tepuy_gameangi_cards', $params);
+    }
+
+    public function playCard($code, $type, $userid) {
+        global $DB;
+
+        if (!in_array($code, self::CASES)) {
+            throw new ByCodeException('invalidcardcode');
+        }
+
+        if (!in_array($type, self::ROLES)) {
+            throw new ByCodeException('invalidcardtype');
+        }
+
+        $roles = $this->currentRoles($userid);
+
+        $valid = false;
+        foreach($roles as $role) {
+            if ($role == $type) {
+                $valid = true;
+                break;
+            }
+        }
+
+        if (!$valid) {
+            throw new ByCodeException('typenotallowed');
+        }
+
+        $case = $this->currentCase();
+
+        $params = array();
+        $params['groupid'] = $this->groupid;
+        $params['userid'] = $userid;
+        $params['caseid'] = $case->id;
+        $params['attempt'] = $case->attempt;
+        $params['cardtype'] = $type;
+
+        $card = $DB->get_record('local_tepuy_gameangi_cards', $params);
+
+        if ($card) {
+            $card = (array)$card;
+            $card['cardcode'] = $code;
+            $card['timemodify'] = time();
+
+            $DB->update_record('local_tepuy_gameangi_cards', $card);
+        } else {
+            $params['cardcode'] = $code;
+            $params['timemodify'] = time();
+
+            $DB->insert_record('local_tepuy_gameangi_cards', $params);
+        }
+
+    }
+
+    public function endCurrentCase() {
+        global $DB;
+
+        $case = $this->currentCase();
+
+        $points = 0;
+
+        if (is_array($case->playedcards)) {
+            foreach($case->playedcards as $card) {
+                if ($case->id == $card->cardcode) {
+                    $points++;
+                }
+            }
+        }
+
+        // Play the 4 correct cards to pass the attempt
+        if ($points == 4) {
+            $case->state = self::STATE_PASSED;
+        } else {
+            if ($case->attempt == 1) {
+                $case->attempt = 2;
+            } else {
+                $case->state = self::STATE_FAILED;
+            }
+        }
+
+        if ($case->state != self::STATE_ACTIVE) {
+            $oneactive = false;
+            //Choose the next case.
+            foreach($this->summary->cases as $localcase) {
+                if ($localcase->state == self::STATE_LOCKED) {
+                    $localcase->state = self::STATE_ACTIVE;
+                    $oneactive = true;
+                    break;
+                }
+            }
+
+            if (!$oneactive) {
+                $this->summary->state = self::STATE_ENDED;
+            }
+        }
+
+        // Remove playedcards for don't save it.
+        unset($case->playedcards);
+
+        $data = new \stdClass();
+        $data->id = $this->summary->id;
+        $data->state = $this->summary->state;
+        $data->team = json_encode($this->summary->team);
+        $data->cases = json_encode($this->summary->cases);
+
+        $DB->update_record('local_tepuy_gameangi', $data);
+    }
+
+    public function currentRoles($userid) {
+        $case = $this->currentCase();
+
+        foreach($case->team as $member) {
+            if ($member->id == $userid) {
+                return $member->roles;
+            }
+        }
+
+        return array();
     }
 
     private function start() {
@@ -119,23 +240,33 @@ class GameAngi {
 
         $members = groups_get_members($this->groupid, 'u.id, u.firstname AS name', 'u.id');
 
+        $members = array_values($members);
+        foreach($members as $member) {
+        }
+
         //Set the role into each case.
         $teams = array();
         $i = 0;
 
         // Master is the last role, it is excluded when the team has not 5 members.
-        $mod = count($members) < 5 ? 4 : 5;
+        $mod = count($members);
         foreach(self::CASES as $case) {
             $teams[$case] = array();
             $j = $i;
-            foreach($members as $key => $member) {
+
+            $team = array();
+            foreach($members as $member) {
+                $one = clone $member;
+                $one->roles = array();
+                $team[] = $one;
+            }
+
+            foreach(self::ROLES as $role) {
                 $j = $j % $mod;
-                $one = new \stdClass();
-                $one->id = $key;
-                $one->role = self::ROLES[$j];
-                $teams[$case][] = $one;
+                $team[$j]->roles[] = $role;
                 $j++;
             }
+            $teams[$case] = $team;
             $i++;
         }
 
@@ -157,7 +288,7 @@ class GameAngi {
 
         $data = new \stdClass();
         $data->groupid = $this->groupid;
-        $data->team = json_encode(array_values($members));
+        $data->team = json_encode($members);
         $data->cases = json_encode($orderedcases);
 
         $data->id = $DB->insert_record('local_tepuy_gameangi', $data, true);

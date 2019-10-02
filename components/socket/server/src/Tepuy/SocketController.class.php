@@ -5,6 +5,8 @@ use Ratchet\ConnectionInterface;
 use Tepuy\Messages;
 use Tepuy\Logging;
 use Tepuy\Action;
+use Tepuy\ByCodeException;
+use Tepuy\AppCodeException;
 
 
 class SocketController implements MessageComponentInterface {
@@ -38,32 +40,33 @@ class SocketController implements MessageComponentInterface {
         $this->skeys[$conn->resourceId] = $sess;
 
         Logging::trace(Logging::LVL_ALL, "New connection! ({$conn->resourceId})");
+
+        $data = new \stdClass();
+        $data->action = 'playerconnected';
+
+        $action = new Action($this, $conn, $data);
+        $action->run();
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
         global $DB, $CFG;
 
-        try {
-            Logging::trace(Logging::LVL_DETAIL, 'Message received from: ' . $from->resourceId);
-            Logging::trace(Logging::LVL_DEBUG, 'Message: ', $msg);
-            Logging::trace(Logging::LVL_DEBUG, 'Clients: ' . count($this->clients));
+        Logging::trace(Logging::LVL_DETAIL, 'Message received from: ' . $from->resourceId);
+        Logging::trace(Logging::LVL_DEBUG, 'Message: ', $msg);
+        Logging::trace(Logging::LVL_DEBUG, 'Clients: ' . count($this->clients));
 
-            $json = @json_decode($msg);
+        $json = @json_decode($msg);
 
-            if (!$json) {
-                Messages::error('invalidjson', null, $from);
-            }
-
-            if (empty($json->action)) {
-                Messages::error('actionrequired', null, $from);
-            }
-
-            $action = new Action($this, $from, $json);
-            $action->run();
+        if (!$json) {
+            Messages::error('invalidjson', null, $from);
         }
-        catch (Exception $e) {
-            Messages::error('generalexception', $e->Message, $from);
+
+        if (empty($json->action)) {
+            Messages::error('actionrequired', null, $from);
         }
+
+        $action = new Action($this, $from, $json);
+        $action->run();
     }
 
     public function onClose(ConnectionInterface $conn) {
@@ -73,11 +76,20 @@ class SocketController implements MessageComponentInterface {
         Action::customUnset($conn);
 
         Logging::trace(Logging::LVL_ALL, "Connection {$conn->resourceId} has disconnected");
+
+        $data = new \stdClass();
+        $data->action = 'playerdisconnected';
+
+        $action = new Action($this, $conn, $data);
+        $action->run();
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) {
+
         Logging::trace(Logging::LVL_ALL, "An error has occurred: {$e->getMessage()}");
 
-        $conn->close();
+        if (!($e instanceof AppException)) {
+            $conn->close();
+        }
     }
 }
