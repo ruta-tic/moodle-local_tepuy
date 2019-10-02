@@ -29,16 +29,16 @@ class GameAngi {
     public $groupid;
 
     // The cases and cards codes. A card by case.
-    public const CASES = array('john', 'natalia', 'hermes', 'santiago', 'nairobi');
-    public const ROLES = array('planner', 'tech', 'media', 'red', 'master');
+    const CASES = array('john', 'natalia', 'hermes', 'santiago', 'nairobi');
+    const ROLES = array('planner', 'tech', 'media', 'red', 'master');
 
-    public const STATE_LOCKED = 'locked';
-    public const STATE_PASSED = 'passed';
-    public const STATE_FAILED = 'failed';
-    public const STATE_ACTIVE = 'active';
+    const STATE_LOCKED = 'locked';
+    const STATE_PASSED = 'passed';
+    const STATE_FAILED = 'failed';
+    const STATE_ACTIVE = 'active';
 
     // Only for game state.
-    public const STATE_ENDED = 'ended';
+    const STATE_ENDED = 'ended';
 
     public $summary;
 

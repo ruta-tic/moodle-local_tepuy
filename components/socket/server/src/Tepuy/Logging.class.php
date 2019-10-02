@@ -3,9 +3,9 @@ namespace Tepuy;
 
 class Logging {
 
-    public const LVL_ALL = 10;
-    public const LVL_DETAIL = 20;
-    public const LVL_DEBUG = 30;
+    const LVL_ALL = 10;
+    const LVL_DETAIL = 20;
+    const LVL_DEBUG = 30;
 
     public static function trace($level, $text, $o = null) {
         global $CFG;

@@ -28,7 +28,7 @@ use Tepuy\GameAngi;
 class Action {
 
     // The only valid actions.
-    public const AVAILABLES = array('chatmsg', 'chathistory', 'gamestate', 'playcard',
+    const AVAILABLES = array('chatmsg', 'chathistory', 'gamestate', 'playcard',
                                     'endcase', 'playerconnected', 'playerdisconnected');
 
     public $action;
