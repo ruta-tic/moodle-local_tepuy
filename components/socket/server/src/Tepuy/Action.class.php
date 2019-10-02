@@ -28,7 +28,7 @@ use Tepuy\GameAngi;
 class Action {
 
     // The only valid actions.
-    const AVAILABLES = array('chatmsg', 'chathistory', 'gamestate', 'playcard',
+    const AVAILABLES = array('chatmsg', 'chathistory', 'gamestate', 'playcard', 'unplaycard',
                                     'endcase', 'playerconnected', 'playerdisconnected');
 
     public $action;
@@ -240,6 +240,50 @@ class Action {
         }
 
         Logging::trace(Logging::LVL_DETAIL, 'Card played.');
+
+        return true;
+    }
+
+    private function action_unplaycard() {
+
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        if (!property_exists($this->request, 'data') ||
+                !property_exists($this->request->data, 'cardcode') ||
+                !property_exists($this->request->data, 'cardtype')
+            ) {
+
+            Messages::error('cardcodeandtyperequired', null, $this->from);
+        }
+
+        $game = new GameAngi($this->session->groupid);
+
+        try {
+            $game->unplayCard($this->request->data->cardcode, $this->request->data->cardtype, $this->user->id);
+        } catch (ByCodeException $ce) {
+            Messages::error($ce->getMessage(), null, $this->from);
+        }
+
+        $data = new \stdClass();
+        $data->timestamp = time();
+        $data->userid = $this->user->id;
+        $data->cardtype = $this->request->data->cardtype;
+        $data->cardcode = $this->request->data->cardcode;
+
+        $msg = $this->getResponse($data);
+        $msg = json_encode($msg);
+
+        foreach ($this->controller->clients as $client) {
+            if ($client !== $this->from &&
+                    $this->controller->skeys[$client->resourceId]->groupid == $this->session->groupid) {
+                // The sender is not the receiver, send to each client connected into same group.
+                $client->send($msg);
+            }
+        }
+
+        Logging::trace(Logging::LVL_DETAIL, 'Card unplayed.');
 
         return true;
     }

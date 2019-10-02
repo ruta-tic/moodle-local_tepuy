@@ -167,6 +167,52 @@ class GameAngi {
 
     }
 
+    public function unplayCard($code, $type, $userid) {
+        global $DB;
+
+        if (!in_array($code, self::CASES)) {
+            throw new ByCodeException('invalidcardcode');
+        }
+
+        if (!in_array($type, self::ROLES)) {
+            throw new ByCodeException('invalidcardtype');
+        }
+
+        $roles = $this->currentRoles($userid);
+
+        $valid = false;
+        foreach($roles as $role) {
+            if ($role == $type) {
+                $valid = true;
+                break;
+            }
+        }
+
+        if (!$valid) {
+            throw new ByCodeException('typenotallowed');
+        }
+
+        $case = $this->currentCase();
+
+        $params = array();
+        $params['groupid'] = $this->groupid;
+        $params['userid'] = $userid;
+        $params['caseid'] = $case->id;
+        $params['attempt'] = $case->attempt;
+        $params['cardtype'] = $type;
+
+        $card = $DB->get_record('local_tepuy_gameangi_cards', $params);
+
+        if ($card) {
+            $DB->delete_records('local_tepuy_gameangi_cards', array('id' => $card->id));
+        } else {
+            throw new ByCodeException('carddontplayed');
+        }
+
+        return true;
+
+    }
+
     public function endCurrentCase() {
         global $DB;
 

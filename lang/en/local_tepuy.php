@@ -39,3 +39,4 @@ $string['cardcodeandtyperequired'] = 'Card code and type are required';
 $string['invalidcardcode'] = 'Invalid card code';
 $string['invalidcardtype'] = 'Invalid card type';
 $string['typenotallowed'] = 'Current user can\'t play this card type';
+$string['carddontplayed'] = 'Card don\'t played';
