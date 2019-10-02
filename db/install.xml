@@ -56,5 +56,38 @@
         <INDEX NAME="uid" UNIQUE="false" FIELDS="uid"/>
       </INDEXES>
     </TABLE>
+    <TABLE NAME="local_tepuy_gameangi" COMMENT="List of games">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="groupid" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="state" TYPE="char" LENGTH="8" NOTNULL="true" DEFAULT="active" SEQUENCE="false"/>
+        <FIELD NAME="team" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON team information"/>
+        <FIELD NAME="cases" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON cases information"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="groupid" UNIQUE="false" FIELDS="groupid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_tepuy_gameangi_cards" COMMENT="Cards played">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="groupid" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="caseid" TYPE="char" LENGTH="8" NOTNULL="true" DEFAULT="" SEQUENCE="false"/>
+        <FIELD NAME="attempt" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="cardtype" TYPE="char" LENGTH="8" NOTNULL="true" DEFAULT="" SEQUENCE="false"/>
+        <FIELD NAME="cardcode" TYPE="char" LENGTH="8" NOTNULL="true" DEFAULT="" SEQUENCE="false"/>
+        <FIELD NAME="timemodify" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="groupid" UNIQUE="false" FIELDS="groupid"/>
+      </INDEXES>
+    </TABLE>
   </TABLES>
 </XMLDB>
