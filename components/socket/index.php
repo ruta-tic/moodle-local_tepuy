@@ -136,7 +136,11 @@ $res->courseshortname = format_string($course->shortname, true, array('context' 
 $res->groupid = $groupid;
 $res->groupname = $groupname;
 
-$res->serverurl = "localhost:8080";
+if (isset($_SERVER['HTTP_HOST'])) {
+    $res->serverurl = $_SERVER['HTTP_HOST'] . ":8080";
+} else {
+    $res->serverurl = "localhost:8080";
+}
 
 echo json_encode($res);
 exit;
