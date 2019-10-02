@@ -57,7 +57,7 @@ if (empty($id)) {
 
     $id = reset($module)->id;
 
-    if (!$cm = get_coursemodule_from_instance('scorm', 1, $course->id)) {
+    if (!$cm = get_coursemodule_from_instance('scorm', $id, $course->id)) {
         print_error('invalidcoursemodule');
     }
 

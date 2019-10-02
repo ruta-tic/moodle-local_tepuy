@@ -30,7 +30,7 @@ class GameAngi {
 
     // The cases and cards codes. A card by case.
     const CASES = array('john', 'natalia', 'hermes', 'santiago', 'nairobi');
-    const ROLES = array('planner', 'tech', 'media', 'red', 'master');
+    const ROLES = array('planner', 'tech', 'media', 'network', 'master');
 
     const STATE_LOCKED = 'locked';
     const STATE_PASSED = 'passed';
