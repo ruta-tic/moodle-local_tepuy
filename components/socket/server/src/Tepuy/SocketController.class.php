@@ -25,11 +25,11 @@ class SocketController implements MessageComponentInterface {
         parse_str($query, $params);
 
         if (empty($params['skey'])) {
-            Messages::error('skeyrequired', null, $conn);
+            Messages::error('skeyrequired', null, $conn, true);
         }
 
         if (!$sess = $DB->get_record('local_tepuy_socket_sessions', array('skey' => $params['skey']))) {
-            Messages::error('invalidkey', null, $conn);
+            Messages::error('invalidkey', null, $conn, true);
         }
 
         $sess->lastping = time();

@@ -26,7 +26,7 @@ namespace Tepuy;
 
 class Messages {
 
-    public static function error($code, $vars = null, $client = null) {
+    public static function error($code, $vars = null, $client = null, $toclose = false) {
         $o = new \stdClass();
         $o->errorcode = $code;
 
@@ -43,7 +43,12 @@ class Messages {
 
         if ($client) {
             $client->send($msg);
-            throw new AppException($code);
+
+            if ($toclose) {
+                throw new Exception($code);
+            } else {
+                throw new AppException($code);
+            }
         } else {
             return $msg;
         }

@@ -137,7 +137,7 @@ $res->groupid = $groupid;
 $res->groupname = $groupname;
 
 if (isset($_SERVER['HTTP_HOST'])) {
-    $res->serverurl = $_SERVER['HTTP_HOST'] . ":8080";
+    $res->serverurl = $_SERVER['HTTP_HOST'] . "/wss2/";
 } else {
     $res->serverurl = "localhost:8080";
 }

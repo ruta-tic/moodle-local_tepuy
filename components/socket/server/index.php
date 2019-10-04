@@ -37,6 +37,7 @@ define("APP_SOURCE_PATH", __DIR__."/src");
 require __DIR__ . '/vendor/autoload.php';
 require 'autoload.php';
 
+//Single server: ws protocol.
 $port = 8080;
 $server = IoServer::factory(
     new HttpServer(
@@ -49,3 +50,28 @@ $server = IoServer::factory(
 
 echo "Server running on port $port" . PHP_EOL;
 $server->run();
+
+
+//Complex server: wss protocol.
+/*
+$app = new HttpServer(
+    new WsServer(
+        new SocketController()
+    )
+);
+
+$loop = \React\EventLoop\Factory::create();
+
+$secure_websockets = new \React\Socket\Server('0.0.0.0:8080', $loop);
+$secure_websockets = new \React\Socket\SecureServer($secure_websockets, $loop, [
+    'local_cert' => '/etc/ssl/certs/ssl-cert-snakeoil.pem',
+    'local_pk' => '/etc/ssl/private/ssl-cert-snakeoil.key',
+    'allow_self_signed' => TRUE,
+    'verify_peer' => false
+]);
+
+$secure_websockets_server = new \Ratchet\Server\IoServer($app, $secure_websockets, $loop);
+
+echo "Server running" . PHP_EOL;
+$secure_websockets_server->run();
+*/
