@@ -80,8 +80,10 @@ class SocketController implements MessageComponentInterface {
         $data = new \stdClass();
         $data->action = 'playerdisconnected';
 
-        $action = new Action($this, $conn, $data);
-        $action->run();
+        if ($this->skeys[$conn->resourceId]) {
+            $action = new Action($this, $conn, $data);
+            $action->run();
+        }
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) {
