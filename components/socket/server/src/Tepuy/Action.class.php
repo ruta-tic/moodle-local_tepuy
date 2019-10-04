@@ -127,7 +127,7 @@ class Action {
 
         $groupselect = $chatuser->groupid ? " AND (groupid=" . $chatuser->groupid . " OR groupid=0) " : "";
 
-        $sql = "SELECT m.id, m.message, m.timestamp, u.id AS userid, u.firstname
+        $sql = "SELECT m.id, m.message, m.timestamp, m.issystem, u.id AS userid, u.firstname
                     FROM {chat_messages_current} AS m
                     INNER JOIN {user} AS u ON m.userid = u.id
                     WHERE chatid = :chatid " . $scondition . $groupselect . ' ORDER BY timestamp DESC';
@@ -142,6 +142,7 @@ class Action {
                 $msg->user->name = $one->firstname;
                 $msg->msg = $one->message;
                 $msg->timestamp = $one->timestamp;
+                $msg->issystem = $one->issystem;
                 $data[] = $msg;
             }
         }
