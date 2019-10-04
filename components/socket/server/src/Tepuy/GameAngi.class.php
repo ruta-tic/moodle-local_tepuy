@@ -238,6 +238,7 @@ class GameAngi {
                 $case->state = self::STATE_FAILED;
             }
         }
+        $case->lastattempt = time();
 
         if ($case->state != self::STATE_ACTIVE) {
             $oneactive = false;
