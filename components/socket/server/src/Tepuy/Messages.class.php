@@ -45,7 +45,7 @@ class Messages {
             $client->send($msg);
 
             if ($toclose) {
-                throw new Exception($code);
+                throw new \Exception($code);
             } else {
                 throw new AppException($code);
             }
