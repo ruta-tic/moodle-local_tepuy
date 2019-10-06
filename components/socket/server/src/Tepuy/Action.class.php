@@ -82,8 +82,19 @@ class Action {
         $data->user = new \stdClass();
         $data->user->id = $this->user->id;
         $data->user->name = $this->user->firstname;
-        $data->msg = $this->request->data;
         $data->timestamp = time();
+        $data->issystem = $this->request->issystem ? 1 : 0;
+
+        if ($this->request->issystem) {
+            if (strpos($this->request->data, 'action') === 0) {
+                $data->msg = get_string('message' . $this->request->data, 'local_tepuy', $one->firstname) . '';
+            }
+            else {
+                $msg->msg = $this->request->data;
+            }
+        } else {
+            $data->msg = $this->request->data;
+        }
 
         $msg = $this->getResponse($data);
         $msg = json_encode($msg);
@@ -144,7 +155,7 @@ class Action {
 
                 if ($msg->issystem) {
                     if (strpos($one->message, 'action') === 0) {
-                        $msg->msg = get_string('message' . $one->message, 'local_tepuy', $one->firstname);
+                        $msg->msg = get_string('message' . $one->message, 'local_tepuy', $one->firstname) . '';
                     } else if (in_array($one->message, array('beepseveryone', 'beepsyou', 'enter', 'exit', 'youbeep'))) {
                         $msg->msg = get_string('message' . $one->message, 'mod_chat', $one->firstname);
                     }
