@@ -287,9 +287,11 @@ class GameAngi {
 
         $members = groups_get_members($this->groupid, 'u.id, u.firstname AS name', 'u.id');
 
-        $members = array_values($members);
-        foreach($members as $member) {
+        if (!$members || count($members) == 0) {
+            throw new AppException(get_string('notmembersingroup', 'local_tepuy', $this->groupid));
         }
+
+        $members = array_values($members);
 
         //Set the role into each case.
         $teams = array();

@@ -17,6 +17,7 @@
 define('AJAX_SCRIPT', true);
 
 require_once('../../../../config.php');
+require_once($CFG->dirroot . '/lib/outputcomponents.php');
 require_once($CFG->dirroot . '/local/tepuy/components/socket/locallib.php');
 
 $uid        = required_param('uid', PARAM_TEXT);
@@ -128,9 +129,18 @@ if (property_exists($settingsdata, 'chatid')) {
 
 }
 
+try {
+    $userpicture = new user_picture(core_user::get_user($USER->id));
+    $pictureurl = $userpicture->get_url($PAGE);
+    $pictureurl = $pictureurl->out();
+} catch (Exception $e) {
+    $userpicture = '';
+}
+
 $res = new stdClass();
 $res->skey = $sess->skey;
 $res->userid = $USER->id;
+$res->userpicture = $pictureurl;
 $res->courseid = $course->id;
 $res->courseshortname = format_string($course->shortname, true, array('context' => context_course::instance($course->id)));
 $res->groupid = $groupid;

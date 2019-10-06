@@ -40,3 +40,18 @@ $string['invalidcardcode'] = 'Invalid card code';
 $string['invalidcardtype'] = 'Invalid card type';
 $string['typenotallowed'] = 'Current user can\'t play this card type';
 $string['carddontplayed'] = 'Card don\'t played';
+$string['notmembersingroup'] = 'Not members in group {$a}';
+
+// Original chat system messages
+$string['messagebeepseveryone'] = '{$a} beeps everyone!';
+$string['messagebeepsyou'] = '{$a} has just beeped you!';
+$string['messageenter'] = '{$a} has just entered this chat';
+$string['messageexit'] = '{$a} has left this chat';
+$string['messageyoubeep'] = 'You beeped {$a}';
+
+// Local chat messages
+$string['messageactionplaycard'] = '{$a} has play a card';
+$string['messageactionunplaycard'] = '{$a} has unplay a card';
+$string['messageactionendcase'] = '{$a} has finished the attempt';
+$string['messageactionplayerconnected'] = '{$a} connected';
+$string['messageactionplayerdisconnected'] = '{$a} disconnected';

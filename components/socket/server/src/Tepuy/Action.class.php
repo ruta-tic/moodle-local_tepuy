@@ -140,9 +140,15 @@ class Action {
                 $msg->user = new \stdClass();
                 $msg->user->id = $one->userid;
                 $msg->user->name = $one->firstname;
-                $msg->msg = $one->message;
-                $msg->timestamp = $one->timestamp;
                 $msg->issystem = $one->issystem;
+
+                if ($msg->issystem) {
+                    $msg->msg = get_string('message' . $one->message, 'local_tepuy', $one->firstname);
+                } else {
+                    $msg->msg = $one->message;
+                }
+
+                $msg->timestamp = $one->timestamp;
                 $data[] = $msg;
             }
         }
@@ -241,6 +247,7 @@ class Action {
         }
 
         Logging::trace(Logging::LVL_DETAIL, 'Card played.');
+        $this->notifyActionToAll();
 
         return true;
     }
@@ -285,6 +292,7 @@ class Action {
         }
 
         Logging::trace(Logging::LVL_DETAIL, 'Card unplayed.');
+        $this->notifyActionToAll();
 
         return true;
     }
@@ -310,6 +318,7 @@ class Action {
         }
 
         Logging::trace(Logging::LVL_DETAIL, 'Case ended.');
+        $this->notifyActionToAll();
 
         return true;
     }
@@ -335,6 +344,8 @@ class Action {
             }
         }
 
+        $this->notifyActionToAll();
+
         return true;
     }
 
@@ -358,6 +369,8 @@ class Action {
                 $client->send($msg);
             }
         }
+
+        $this->notifyActionToAll();
 
         return true;
     }
@@ -396,4 +409,18 @@ class Action {
         return $msg;
     }
 
+    private function notifyActionToAll() {
+
+        try {
+            $data = new \stdClass();
+            $data->action = 'chatmsg';
+            $data->data = get_string('messageaction' . $this->action, 'local_tepuy', $this->user->firstname);
+
+            $action = new Action($this->controller, $this->from, $data);
+            $action->run();
+            return true;
+        } catch(\Exception $e) {
+            return false;
+        }
+    }
 }
