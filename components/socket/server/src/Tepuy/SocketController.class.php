@@ -65,7 +65,6 @@ class SocketController implements MessageComponentInterface {
             Messages::error('actionrequired', null, $from);
         }
 
-        $json->issystem = false;
         $action = new Action($this, $from, $json);
         $action->run();
     }

@@ -55,3 +55,7 @@ $string['messageactionunplaycard'] = '{$a} has unplay a card';
 $string['messageactionendcase'] = '{$a} has finished the attempt';
 $string['messageactionplayerconnected'] = '{$a} connected';
 $string['messageactionplayerdisconnected'] = '{$a} disconnected';
+$string['messageactioncasefailed'] = 'Case failed';
+$string['messageactioncasepassed'] = 'Case passed';
+$string['messageactionattemptfailed'] = 'Attempt failed';
+$string['messageactionattemptpassed'] = 'Attempt passed';

@@ -74,6 +74,14 @@ class Action {
 
         $chatuser = $this->getChatUser();
 
+        if (!property_exists($this->request, 'issystem')) {
+            $this->request->issystem = false;
+        }
+
+        if (!property_exists($this->request, 'tosender')) {
+            $this->request->tosender = false;
+        }
+
         //A Moodle action to save a chat message.
         $msgid = chat_send_chatmessage($chatuser, $this->request->data, $this->request->issystem);
 
@@ -323,6 +331,7 @@ class Action {
 
         $game = new GameAngi($this->session->groupid);
 
+        $originalcase = $game->currentCase();
         $game->endCurrentCase();
 
         $msg = $this->getResponse(null);
@@ -337,6 +346,15 @@ class Action {
 
         Logging::trace(Logging::LVL_DETAIL, 'Case ended.');
         $this->notifyActionToAll();
+
+        $keyresponse = 'action';
+        if ($originalcase->state != GameAngi::STATE_ACTIVE) {
+            $keyresponse .= 'case' . $originalcase->state;
+        } else {
+            $keyresponse .= 'attemptfailed';
+        }
+
+        $this->notifyActionToAll($keyresponse, true);
 
         return true;
     }
@@ -427,17 +445,27 @@ class Action {
         return $msg;
     }
 
-    private function notifyActionToAll() {
+    private function notifyActionToAll($msg = null, $tosender = false) {
 
         try {
             $data = new \stdClass();
             $data->action = 'chatmsg';
-            $data->data = 'action' . $this->action;
             $data->issystem = true;
+            $data->tosender = $tosender;
+
+            if ($msg) {
+                $data->data = $msg;
+            } else {
+                $data->data = 'action' . $this->action;
+            }
 
             $action = new Action($this->controller, $this->from, $data);
             $action->run();
+
+            Logging::trace(Logging::LVL_DETAIL, 'Chat system message: ' . $data->data);
+
             return true;
+
         } catch(\Exception $e) {
             return false;
         }
