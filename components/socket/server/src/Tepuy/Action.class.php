@@ -75,7 +75,7 @@ class Action {
         $chatuser = $this->getChatUser();
 
         //A Moodle action to save a chat message.
-        $msgid = chat_send_chatmessage($chatuser, $this->request->data);
+        $msgid = chat_send_chatmessage($chatuser, $this->request->data, $this->request->issystem);
 
         $data = new \stdClass();
         $data->id = $msgid;
@@ -415,6 +415,7 @@ class Action {
             $data = new \stdClass();
             $data->action = 'chatmsg';
             $data->data = get_string('messageaction' . $this->action, 'local_tepuy', $this->user->firstname);
+            $data->issystem = true;
 
             $action = new Action($this->controller, $this->from, $data);
             $action->run();
