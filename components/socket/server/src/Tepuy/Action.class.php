@@ -87,7 +87,7 @@ class Action {
 
         if ($this->request->issystem) {
             if (strpos($this->request->data, 'action') === 0) {
-                $data->msg = get_string('message' . $this->request->data, 'local_tepuy', $one->firstname) . '';
+                $data->msg = get_string('message' . $this->request->data, 'local_tepuy', $this->user->firstname) . '';
             }
             else {
                 $msg->msg = $this->request->data;
