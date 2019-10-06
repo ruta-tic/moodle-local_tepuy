@@ -143,7 +143,11 @@ class Action {
                 $msg->issystem = $one->issystem;
 
                 if ($msg->issystem) {
-                    $msg->msg = get_string('message' . $one->message, 'local_tepuy', $one->firstname);
+                    if (strpos($one->message, 'action') === 0) {
+                        $msg->msg = get_string('message' . $one->message, 'local_tepuy', $one->firstname);
+                    } else {
+                        $msg->msg = $one->message;
+                    }
                 } else {
                     $msg->msg = $one->message;
                 }
@@ -414,7 +418,7 @@ class Action {
         try {
             $data = new \stdClass();
             $data->action = 'chatmsg';
-            $data->data = get_string('messageaction' . $this->action, 'local_tepuy', $this->user->firstname);
+            $data->data = 'action' . $this->action;
             $data->issystem = true;
 
             $action = new Action($this->controller, $this->from, $data);
