@@ -145,7 +145,10 @@ class Action {
                 if ($msg->issystem) {
                     if (strpos($one->message, 'action') === 0) {
                         $msg->msg = get_string('message' . $one->message, 'local_tepuy', $one->firstname);
-                    } else {
+                    } else if (in_array($one->message, array('beepseveryone', 'beepsyou', 'enter', 'exit', 'youbeep'))) {
+                        $msg->msg = get_string('message' . $one->message, 'mod_chat', $one->firstname);
+                    }
+                    else {
                         $msg->msg = $one->message;
                     }
                 } else {
