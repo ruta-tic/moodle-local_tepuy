@@ -71,6 +71,17 @@ class GameAngi {
         return $res;
     }
 
+    public function points() {
+
+        $points = 0;
+        foreach($this->summary->cases as $case) {
+            if ($case->state == self::STATE_PASSED) {
+                $points += $case->attempt == 1 ? 100 : 60;
+            }
+        }
+        return $points;
+    }
+
     public function currentCase() {
 
         foreach($this->summary->cases as $case) {

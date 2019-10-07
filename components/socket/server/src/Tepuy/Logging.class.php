@@ -27,7 +27,7 @@ class Logging {
     }
 
     private static function print($text, $o) {
-        echo "\n" . $text;
+        echo "\n" . date('Y-m-d H:i:s') . '::: ' . $text;
 
         if ($o) {
             echo "\n-----------------------------\n";

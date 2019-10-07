@@ -222,6 +222,7 @@ class Action {
         }
 
         $data->cases = $game->casesState();
+        $data->points = $game->points();
 
         $msg = $this->getResponse($data);
         $msg = json_encode($msg);
