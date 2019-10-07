@@ -108,7 +108,7 @@ class Action {
         $msg = json_encode($msg);
 
         foreach ($this->controller->clients as $client) {
-            if ($client !== $this->from &&
+            if (($client !== $this->from || $this->request->tosender) &&
                     $this->controller->skeys[$client->resourceId]->groupid == $chatuser->groupid) {
                 // The sender is not the receiver, send to each client connected into same group.
                 $client->send($msg);
