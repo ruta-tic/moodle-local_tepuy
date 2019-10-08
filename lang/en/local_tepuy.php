@@ -51,11 +51,11 @@ $string['messageyoubeep'] = 'You beeped {$a}';
 
 // Local chat messages
 $string['messageactionplaycard'] = '{$a} has play a card';
-$string['messageactionunplaycard'] = '{$a} has unplay a card';
+$string['messageactionunplaycard'] = '{$a} has withdrawn a card';
 $string['messageactionendcase'] = '{$a} has finished the attempt';
 $string['messageactionplayerconnected'] = '{$a} connected';
 $string['messageactionplayerdisconnected'] = '{$a} disconnected';
 $string['messageactioncasefailed'] = 'Case failed';
 $string['messageactioncasepassed'] = 'Case passed';
 $string['messageactionattemptfailed'] = 'Attempt failed';
-$string['messageactionattemptpassed'] = 'Attempt passed';
+$string['messageactionattemptpassed'] = 'Attempt successfully approved';
