@@ -89,5 +89,20 @@
         <INDEX NAME="groupid" UNIQUE="false" FIELDS="groupid"/>
       </INDEXES>
     </TABLE>
+    <TABLE NAME="local_tepuy_singledb" COMMENT="List of data to singledb component">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="groupid" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="relatedid" TYPE="int" LENGTH="11" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="tablekey" TYPE="char" LENGTH="127" NOTNULL="true" DEFAULT="" SEQUENCE="false"/>
+        <FIELD NAME="datastore" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="As a table record, into JSON"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="groupid" UNIQUE="false" FIELDS="groupid"/>
+      </INDEXES>
+    </TABLE>
   </TABLES>
 </XMLDB>
