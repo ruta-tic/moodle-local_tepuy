@@ -41,6 +41,7 @@ $string['invalidcardtype'] = 'Tipo de carta inválido';
 $string['typenotallowed'] = 'El usuario actual no puede jugar este tipo de carta';
 $string['carddontplayed'] = 'Carta no jugada';
 $string['notmembersingroup'] = 'No hay miembros en el grupo {$a}';
+$string['restardbconnection'] = 'La conexión con la base de datos ha sido reiniciada';
 
 // Original chat system messages
 $string['messagebeepseveryone'] = '{$a} envía un beep a todos';
