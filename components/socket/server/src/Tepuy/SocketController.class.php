@@ -90,7 +90,18 @@ class SocketController implements MessageComponentInterface {
 
         Logging::trace(Logging::LVL_ALL, "An error has occurred: {$e->getMessage()}");
 
-        if (!($e instanceof AppException)) {
+        if (get_class($e) == 'dml_read_exception') {
+
+            // Destroy the global DB Moodle variable in order to rebuild it.
+            unset($GLOBALS['DB']);
+
+            // Moodle function. Used to restart the database connection ($DB global variable).
+            setup_DB();
+
+            $msg = Messages::error('restardbconnection');
+            $conn->send($msg);
+            $conn->close();
+        } else if (!($e instanceof AppException)) {
             $conn->close();
         }
     }
