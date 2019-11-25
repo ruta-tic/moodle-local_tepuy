@@ -24,6 +24,7 @@
 
 namespace Tepuy;
 use Tepuy\GameAngi;
+use Tepuy\SocketSessions;
 
 class Action {
 
@@ -56,7 +57,7 @@ class Action {
         $this->controller = $controller;
         $this->action = $request->action;
         $this->request = $request;
-        $this->session = $controller->skeys[$from->resourceId];
+        $this->session = SocketSessions::getSSById($from->resourceId);
         $this->user = $DB->get_record('user', array('id' => $this->session->userid));
     }
 
@@ -107,9 +108,10 @@ class Action {
         $msg = $this->getResponse($data);
         $msg = json_encode($msg);
 
-        foreach ($this->controller->clients as $client) {
+        $clients = SocketSessions::getClientsById($this->from->resourceId);
+        foreach ($clients as $client) {
             if (($client !== $this->from || $this->request->tosender) &&
-                    $this->controller->skeys[$client->resourceId]->groupid == $chatuser->groupid) {
+                    SocketSessions::getSSById($client->resourceId)->groupid == $chatuser->groupid) {
                 // The sender is not the receiver, send to each client connected into same group.
                 $client->send($msg);
             }
@@ -213,7 +215,8 @@ class Action {
         // Load connected state of members.
         foreach($data->team as $member) {
             $member->connected = false;
-            foreach($this->controller->skeys as $sess) {
+            $sesslist = SocketSessions::getSSs($this->from->resourceId);
+            foreach($sesslist as $sess) {
                 if ($sess->userid == $member->id) {
                     $member->connected = true;
                     break;
@@ -265,9 +268,10 @@ class Action {
         $msg = $this->getResponse($data);
         $msg = json_encode($msg);
 
-        foreach ($this->controller->clients as $client) {
+        $clients = SocketSessions::getClientsById($this->from->resourceId);
+        foreach ($clients as $client) {
             if ($client !== $this->from &&
-                    $this->controller->skeys[$client->resourceId]->groupid == $this->session->groupid) {
+                    SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
                 // The sender is not the receiver, send to each client connected into same group.
                 $client->send($msg);
             }
@@ -310,9 +314,10 @@ class Action {
         $msg = $this->getResponse($data);
         $msg = json_encode($msg);
 
-        foreach ($this->controller->clients as $client) {
+        $clients = SocketSessions::getClientsById($this->from->resourceId);
+        foreach ($clients as $client) {
             if ($client !== $this->from &&
-                    $this->controller->skeys[$client->resourceId]->groupid == $this->session->groupid) {
+                    SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
                 // The sender is not the receiver, send to each client connected into same group.
                 $client->send($msg);
             }
@@ -338,8 +343,9 @@ class Action {
         $msg = $this->getResponse(null);
         $msg = json_encode($msg);
 
-        foreach ($this->controller->clients as $client) {
-            if ($this->controller->skeys[$client->resourceId]->groupid == $this->session->groupid) {
+        $clients = SocketSessions::getClientsById($this->from->resourceId);
+        foreach ($clients as $client) {
+            if (SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
                 // Send to each client connected into same group, including the sender.
                 $client->send($msg);
             }
@@ -373,9 +379,10 @@ class Action {
         $msg = $this->getResponse($data);
         $msg = json_encode($msg);
 
-        foreach ($this->controller->clients as $client) {
+        $clients = SocketSessions::getClientsById($this->from->resourceId);
+        foreach ($clients as $client) {
             if ($client !== $this->from &&
-                    $this->controller->skeys[$client->resourceId]->groupid == $this->session->groupid) {
+                    SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
                 // The sender is not the receiver, send to each client connected into same group.
                 $client->send($msg);
             }
@@ -399,9 +406,10 @@ class Action {
         $msg = $this->getResponse($data);
         $msg = json_encode($msg);
 
-        foreach ($this->controller->clients as $client) {
+        $clients = SocketSessions::getClientsById($this->from->resourceId);
+        foreach ($clients as $client) {
             if ($client !== $this->from &&
-                    $this->controller->skeys[$client->resourceId]->groupid == $this->session->groupid) {
+                    SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
                 // The sender is not the receiver, send to each client connected into same group.
                 $client->send($msg);
             }

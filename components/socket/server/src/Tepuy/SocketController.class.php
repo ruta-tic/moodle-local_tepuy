@@ -7,15 +7,12 @@ use Tepuy\Logging;
 use Tepuy\Action;
 use Tepuy\ByCodeException;
 use Tepuy\AppCodeException;
+use Tepuy\SocketSessions;
 
 
 class SocketController implements MessageComponentInterface {
-    public $clients;
-    public $skeys;
 
     public function __construct() {
-        $this->clients = new \SplObjectStorage;
-        $this->skeys = array();
     }
 
     public function onOpen(ConnectionInterface $conn) {
@@ -35,9 +32,7 @@ class SocketController implements MessageComponentInterface {
         $sess->lastping = time();
         $DB->update_record('local_tepuy_socket_sessions', $sess);
 
-        // Store the new connection to send messages to later
-        $this->clients->attach($conn);
-        $this->skeys[$conn->resourceId] = $sess;
+        SocketSessions::addConnection($conn, $sess);
 
         Logging::trace(Logging::LVL_ALL, "New connection! ({$conn->resourceId})");
 
@@ -53,7 +48,7 @@ class SocketController implements MessageComponentInterface {
 
         Logging::trace(Logging::LVL_DETAIL, 'Message received from: ' . $from->resourceId);
         Logging::trace(Logging::LVL_DEBUG, 'Message: ', $msg);
-        Logging::trace(Logging::LVL_DEBUG, 'Clients: ' . count($this->clients));
+        Logging::trace(Logging::LVL_DEBUG, 'Clients: ' . SocketSessions::countClients($from->resourceId));
 
         $json = @json_decode($msg);
 
@@ -71,7 +66,7 @@ class SocketController implements MessageComponentInterface {
 
     public function onClose(ConnectionInterface $conn) {
         // The connection is closed, remove it, as we can no longer send it messages
-        $this->clients->detach($conn);
+        SocketSessions::rmConnection($conn);
 
         Action::customUnset($conn);
 
@@ -80,7 +75,7 @@ class SocketController implements MessageComponentInterface {
         $data = new \stdClass();
         $data->action = 'playerdisconnected';
 
-        if (isset($this->skeys[$conn->resourceId])) {
+        if (SocketSessions::isActiveSessKey($conn->resourceId)) {
             $action = new Action($this, $conn, $data);
             $action->run();
         }
