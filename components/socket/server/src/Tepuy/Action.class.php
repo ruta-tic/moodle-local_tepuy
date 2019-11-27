@@ -29,8 +29,13 @@ use Tepuy\SocketSessions;
 class Action {
 
     // The only valid actions.
-    const AVAILABLES = array('chatmsg', 'chathistory', 'gamestate', 'playcard', 'unplaycard',
-                                    'endcase', 'playerconnected', 'playerdisconnected');
+    const AVAILABLES = array('chatmsg', 'chathistory', 'gamestate', 'playerconnected', 'playerdisconnected',
+                                // Actions to GameAngi.
+                                'playcard', 'unplaycard', 'endcase',
+                                // Actions to Games SmartCity and Pandemia.
+                                'sc_gamestart', 'sc_changetimeframe', 'sc_playaction',
+                                'sc_playtechnology', 'sc_stopaction', 'sc_stoptechnology', 'sc_actioncompleted',
+                                'sc_technologycompleted', 'sc_healthupdate', 'sc_gameover');
 
     public $action;
 
@@ -38,23 +43,25 @@ class Action {
 
     public $from;
 
-    public $controller;
-
     public $session;
 
     public $user;
 
     public static $chats = array();
 
-    public function __construct($controller, $from, $request) {
+    public function __construct($from, $request) {
         global $DB;
 
         if (!in_array($request->action, self::AVAILABLES)) {
             Messages::error('invalidaction', $request->action, $from);
         }
 
+        $gameactions = SocketSessions::getGameActions($from->resourceId);
+        if (!in_array($request->action, $gameactions)) {
+            Messages::error('invalidaction', $request->action, $from);
+        }
+
         $this->from = $from;
-        $this->controller = $controller;
         $this->action = $request->action;
         $this->request = $request;
         $this->session = SocketSessions::getSSById($from->resourceId);
@@ -197,35 +204,65 @@ class Action {
             Messages::error('notgroupnotteam', null, $this->from);
         }
 
-        $game = new GameAngi($this->session->groupid);
-
-        $current = $game->currentCase();
 
         $data = new \stdClass();
         $data->currenttime = time();
 
-        if ($current) {
-            $data->team = $current->team;
-            $data->playedcards = $current->playedcards;
-        } else {
+        $gamekey = SocketSessions::getGameKey($this->from->resourceId);
+
+        if ($gamekey == 'GameAngi') {
+            $game = new GameAngi($this->session->groupid);
+
+            $current = $game->currentCase();
+
+            if ($current) {
+                $data->team = $current->team;
+                $data->playedcards = $current->playedcards;
+            } else {
+                $data->team = $game->summary->team;
+                $data->playedcards = array();
+
+            }
+
+            $data->cases = $game->casesState();
+            $data->points = $game->points();
+
+        } else if ($gamekey == 'SmartCity') {
+            $game = new SmartCity($this->session->groupid);
+
             $data->team = $game->summary->team;
-            $data->playedcards = array();
+            $data->games = $game->getGames();
+            $data->timeframe = (int)$game->summary->timeframe;
+            $data->health = $game->getHealth();
+            $data->actions = $game->getActions($this->user->id);
+            $data->technologies = $game->getTechnologies($this->user->id);
+            $data->files = $game->getFiles();
+
+            $current = $game->currentGame();
+            if($current) {
+                $data->starttime = $current->starttime;
+                $data->duedate = $game->getDuedate();
+            } else {
+                $data->starttime = 0;
+                $data->duedate = 0;
+            }
+
         }
 
-        // Load connected state of members.
-        foreach($data->team as $member) {
-            $member->connected = false;
-            $sesslist = SocketSessions::getSSs($this->from->resourceId);
-            foreach($sesslist as $sess) {
-                if ($sess->userid == $member->id) {
-                    $member->connected = true;
-                    break;
+
+        if (property_exists($data, 'team')) {
+            // Load connected state of members.
+            foreach($data->team as $member) {
+                $member->connected = false;
+                $sesslist = SocketSessions::getSSs($this->from->resourceId);
+                foreach($sesslist as $sess) {
+                    if ($sess->userid == $member->id) {
+                        $member->connected = true;
+                        break;
+                    }
                 }
             }
         }
-
-        $data->cases = $game->casesState();
-        $data->points = $game->points();
 
         $msg = $this->getResponse($data);
         $msg = json_encode($msg);
@@ -420,6 +457,50 @@ class Action {
         return true;
     }
 
+    // Specific SmartCity actions.
+
+    private function action_sc_gamestart() {
+
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        if (!property_exists($this->request, 'data') ||
+                !property_exists($this->request->data, 'level')
+            ) {
+
+            Messages::error('fieldrequired', 'level', $this->from);
+        }
+
+        $game = new SmartCity($this->session->groupid);
+
+        try {
+            $game->start($this->request->data->level);
+        } catch (ByCodeException $ce) {
+            Messages::error($ce->getMessage(), null, $this->from);
+        }
+
+        $data = new \stdClass();
+        $data->level = $this->request->data->level;
+
+        $msg = $this->getResponse($data);
+        $msg = json_encode($msg);
+
+        $clients = SocketSessions::getClientsById($this->from->resourceId);
+        foreach ($clients as $client) {
+            if (SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
+                // Send to each client connected into same group, including the sender.
+                $client->send($msg);
+            }
+        }
+
+        Logging::trace(Logging::LVL_DETAIL, 'Game start with level: ' . $this->request->data->level);
+        $this->notifyActionToAll();
+
+        return true;
+    }
+
+
     private function getChatUser() {
         global $DB;
 
@@ -468,7 +549,7 @@ class Action {
                 $data->data = 'action' . $this->action;
             }
 
-            $action = new Action($this->controller, $this->from, $data);
+            $action = new Action($this->from, $data);
             $action->run();
 
             Logging::trace(Logging::LVL_DETAIL, 'Chat system message: ' . $data->data);

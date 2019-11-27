@@ -42,6 +42,9 @@ $string['typenotallowed'] = 'Current user can\'t play this card type';
 $string['carddontplayed'] = 'Card don\'t played';
 $string['notmembersingroup'] = 'Not members in group {$a}';
 $string['restardbconnection'] = 'The DB connection was restarted';
+$string['fieldrequired'] = 'The field {$a} is required.';
+$string['errorgamestart'] = 'A game is active currently';
+
 
 // Original chat system messages
 $string['messagebeepseveryone'] = '{$a} beeps everyone!';
@@ -60,3 +63,12 @@ $string['messageactioncasefailed'] = 'Case failed';
 $string['messageactioncasepassed'] = 'Case passed';
 $string['messageactionattemptfailed'] = 'Attempt failed';
 $string['messageactionattemptpassed'] = 'Attempt successfully approved';
+$string['messageactionsc_gamestart'] = '{$a} has started the game';
+$string['messageactionsc_changetimeframe'] = '{$a} has changed the timeframe';
+$string['messageactionsc_playaction'] = '{$a} has played an action';
+$string['messageactionsc_playtechnology'] = '{$a} has played a technology';
+$string['messageactionsc_stopaction'] = '{$a} has stoped an action';
+$string['messageactionsc_stoptechnology'] = '{$a} has stoped a technology';
+$string['messageactionsc_actioncompleted'] = 'An action was completed';
+$string['messageactionsc_technologycompleted'] = 'An technology was completed';
+$string['messageactionsc_gameover'] = 'Gameover';

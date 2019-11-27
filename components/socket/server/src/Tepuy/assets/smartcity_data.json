@@ -1,0 +1,1356 @@
+{
+    "actions": [
+        {
+            "id": "a1",
+            "name": "Transporte público ecológico",
+            "endmode": "manual",
+            "endtime": 22,
+            "zones": [0, 0, 10, 0, -2, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 5
+                },
+                {
+                    "type": "physical",
+                    "value": 20
+                },
+                {
+                    "type": "energy",
+                    "value": 10
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a2",
+            "name": "Educación ambiental",
+            "endmode": "manual",
+            "endtime": 2,
+            "zones": [1, 1, 0, 2, 1, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 10
+                },
+                {
+                    "type": "physical",
+                    "value": 5
+                },
+                {
+                    "type": "energy",
+                    "value": 5
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a3",
+            "name": "",
+            "endmode": "manual",
+            "endtime": 20,
+            "zones": [1, 2, 0, 2, 1, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 10
+                },
+                {
+                    "type": "physical",
+                    "value": 2
+                },
+                {
+                    "type": "energy",
+                    "value": 10
+                }
+            ],
+            "tecnologies": ["E-Learning", "Redes sociales"],
+            "files": []
+        },
+        {
+            "id": "a4",
+            "name": "Mejoramiento de bibliotecas",
+            "endmode": "auto",
+            "endtime": 4,
+            "zones": [0, 5, 1, 0, 0, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 5
+                },
+                {
+                    "type": "physical",
+                    "value": 2
+                },
+                {
+                    "type": "energy",
+                    "value": 5
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a5",
+            "name": "",
+            "endmode": "auto",
+            "endtime": 4,
+            "zones": [0, 5, 2, 0, 0, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 4
+                },
+                {
+                    "type": "physical",
+                    "value": 2
+                },
+                {
+                    "type": "energy",
+                    "value": 5
+                }
+            ],
+            "tecnologies": ["Big Data"],
+            "files": []
+        },
+        {
+            "id": "a6",
+            "name": "Domotización de viviendas",
+            "endmode": "manual",
+            "endtime": 15,
+            "zones": [0, 0, 4, 1, 0, 1],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 5
+                },
+                {
+                    "type": "physical",
+                    "value": 10
+                },
+                {
+                    "type": "energy",
+                    "value": 10
+                }
+            ],
+            "tecnologies": ["Interconnect"],
+            "files": []
+        },
+        {
+            "id": "a7",
+            "name": "Educación a distancia",
+            "endmode": "manual",
+            "endtime": 12,
+            "zones": [0, 3, 0, 0, 0, 2],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 15
+                },
+                {
+                    "type": "physical",
+                    "value": 5
+                },
+                {
+                    "type": "energy",
+                    "value": 5
+                }
+            ],
+            "tecnologies": ["E-Learning"],
+            "files": []
+        },
+        {
+            "id": "a8",
+            "name": "Aulas inteligentes",
+            "endmode": "manual",
+            "endtime": 15,
+            "zones": [0, 6, 0, 0, 2, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 20
+                },
+                {
+                    "type": "physical",
+                    "value": 15
+                },
+                {
+                    "type": "energy",
+                    "value": 12
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a9",
+            "name": "",
+            "endmode": "manual",
+            "endtime": 15,
+            "zones": [0, 6, 0, 0, 2, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 10
+                },
+                {
+                    "type": "physical",
+                    "value": 12
+                },
+                {
+                    "type": "energy",
+                    "value": 12
+                }
+            ],
+            "tecnologies": ["Contenidos por Streaming"],
+            "files": []
+        },
+        {
+            "id": "a10",
+            "name": "Computadores para enseñar",
+            "endmode": "manual",
+            "endtime": 15,
+            "zones": [0, 3, 0, 0, 1, 1],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 9
+                },
+                {
+                    "type": "physical",
+                    "value": 8
+                },
+                {
+                    "type": "energy",
+                    "value": 6
+                }
+            ],
+            "tecnologies": ["Password Secure", "Paralely"],
+            "files": []
+        },
+        {
+            "id": "a11",
+            "name": "Capacitar en uso de herramienta de almacenamiento de datos en la nube",
+            "endmode": "auto",
+            "endtime": 2,
+            "zones": [0, 1, 0, 0, 2, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 5
+                },
+                {
+                    "type": "physical",
+                    "value": 5
+                },
+                {
+                    "type": "energy",
+                    "value": 3
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a12",
+            "name": "Campaña para emplear los pagos electrónicos",
+            "endmode": "auto",
+            "endtime": 2,
+            "zones": [0, 0, 0, 2, 0, 2],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 8
+                },
+                {
+                    "type": "physical",
+                    "value": 5
+                },
+                {
+                    "type": "energy",
+                    "value": 4
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a13",
+            "name": "Optimización de rutas de transporte",
+            "endmode": "auto",
+            "endtime": 2,
+            "zones": [0, 0, 4, 3, 1, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 13
+                },
+                {
+                    "type": "physical",
+                    "value": 8
+                },
+                {
+                    "type": "energy",
+                    "value": 5
+                }
+            ],
+            "tecnologies": ["Localízate y Optitravel"],
+            "files": ["Plan de rutas"]
+        },
+        {
+            "id": "a14",
+            "name": "Ciclorutas",
+            "endmode": "auto",
+            "endtime": 5,
+            "zones": [3, 0, 5, 6, 5, -2],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 10
+                },
+                {
+                    "type": "physical",
+                    "value": 10
+                },
+                {
+                    "type": "energy",
+                    "value": 8
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a15",
+            "name": "Energías alternativas",
+            "endmode": "manual",
+            "endtime": 10,
+            "zones": [2, 0, -3, 5, 2, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 10
+                },
+                {
+                    "type": "physical",
+                    "value": 15
+                },
+                {
+                    "type": "energy",
+                    "value": 12
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a16",
+            "name": "Implementar red de pantallas de información",
+            "endmode": "manual",
+            "endtime": 7,
+            "zones": [0, 0, 3, -2, 0, 4],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 10
+                },
+                {
+                    "type": "physical",
+                    "value": 15
+                },
+                {
+                    "type": "energy",
+                    "value": 12
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a17",
+            "name": "Purificación de las aguas",
+            "endmode": "manual",
+            "endtime": 28,
+            "zones": [10, 0, 0, 5, 0, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 15
+                },
+                {
+                    "type": "physical",
+                    "value": 20
+                },
+                {
+                    "type": "energy",
+                    "value": 20
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a18",
+            "name": "Renovación del parque automotor",
+            "endmode": "auto",
+            "endtime": 6,
+            "zones": [3, 0, 5, 8, -1, 3],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 10
+                },
+                {
+                    "type": "physical",
+                    "value": 10
+                },
+                {
+                    "type": "energy",
+                    "value": 5
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a19",
+            "name": "Red de estaciones de servicio de carga eléctrica",
+            "endmode": "manual",
+            "endtime": 10,
+            "zones": [0, 0, 0, 5, 0, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 10
+                },
+                {
+                    "type": "physical",
+                    "value": 12
+                },
+                {
+                    "type": "energy",
+                    "value": 10
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a20",
+            "name": "Juntas virtuales de gobierno",
+            "endmode": "auto",
+            "endtime": 2,
+            "zones": [0, 0, 0, 0, 5, 1],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 10
+                },
+                {
+                    "type": "physical",
+                    "value": 5
+                },
+                {
+                    "type": "energy",
+                    "value": 5
+                }
+            ],
+            "tecnologies": ["Computación en la nube"],
+            "files": []
+        },
+        {
+            "id": "a21",
+            "name": "Campaña para mejorar calidad del aire",
+            "endmode": "auto",
+            "endtime": 2,
+            "zones": [0, 0, 1, 5, 0, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 10
+                },
+                {
+                    "type": "physical",
+                    "value": 5
+                },
+                {
+                    "type": "energy",
+                    "value": 3
+                }
+            ],
+            "tecnologies": ["SICOA"],
+            "files": ["Informe ambiental"]
+        },
+        {
+            "id": "a22",
+            "name": "Control inteligente de servicios públicos",
+            "endmode": "manual",
+            "endtime": 8,
+            "zones": [0, 0, 3, 3, 0, -2],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 10
+                },
+                {
+                    "type": "physical",
+                    "value": 7
+                },
+                {
+                    "type": "energy",
+                    "value": 10
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a23",
+            "name": "Automatización de la red de semáforos",
+            "endmode": "auto",
+            "endtime": 3,
+            "zones": [0, 0, 5, 0, 0, 2],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 5
+                },
+                {
+                    "type": "physical",
+                    "value": 7
+                },
+                {
+                    "type": "energy",
+                    "value": 8
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a24",
+            "name": "Red de cámaras de seguridad",
+            "endmode": "manual",
+            "endtime": 13,
+            "zones": [0, 0, 0, 0, 1, 5],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 10
+                },
+                {
+                    "type": "physical",
+                    "value": 12
+                },
+                {
+                    "type": "energy",
+                    "value": 12
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a25",
+            "name": "Basureros inteligentes",
+            "endmode": "manual",
+            "endtime": 14,
+            "zones": [0, 0, 1, 4, 0, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 10
+                },
+                {
+                    "type": "physical",
+                    "value": 10
+                },
+                {
+                    "type": "energy",
+                    "value": 8
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a26",
+            "name": "Fotodetección de buenas conductas ciudadanas",
+            "endmode": "manual",
+            "endtime": 16,
+            "zones": [0, 0, 0, 0, 2, 4],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 10
+                },
+                {
+                    "type": "physical",
+                    "value": 10
+                },
+                {
+                    "type": "energy",
+                    "value": 12
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a27",
+            "name": "Transmisión en línea de eventos deportivos, culturales o académicos.",
+            "endmode": "manual",
+            "endtime": 20,
+            "zones": [3, 5, 0, -5, 3, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 8
+                },
+                {
+                    "type": "physical",
+                    "value": 8
+                },
+                {
+                    "type": "energy",
+                    "value": 12
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a28",
+            "name": "Implementación de cabina de monitoreo de salud",
+            "endmode": "manual",
+            "endtime": 8,
+            "zones": [5, 0, 0, 0, 0, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 10
+                },
+                {
+                    "type": "physical",
+                    "value": 12
+                },
+                {
+                    "type": "energy",
+                    "value": 10
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a29",
+            "name": "Puesto de información de asistente virtual",
+            "endmode": "manual",
+            "endtime": 8,
+            "zones": [0, 0, 2, 0, 0, 2],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 5
+                },
+                {
+                    "type": "physical",
+                    "value": 10
+                },
+                {
+                    "type": "energy",
+                    "value": 7
+                }
+            ],
+            "tecnologies": ["Tu solución"],
+            "files": ["Resultados de búsqueda"]
+        },
+        {
+            "id": "a30",
+            "name": "Adoptar aplicación para transporte público local",
+            "endmode": "auto",
+            "endtime": 2,
+            "zones": [0, 0, 0, 0, 0, 3],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 5
+                },
+                {
+                    "type": "physical",
+                    "value": 3
+                },
+                {
+                    "type": "energy",
+                    "value": 2
+                }
+            ],
+            "tecnologies": ["Aplicación transporte público - Urbatrans"],
+            "files": []
+        },
+        {
+            "id": "a31",
+            "name": "Utilizar indicadores de gobierno en línea",
+            "endmode": "auto",
+            "endtime": 2,
+            "zones": [0, 0, 0, 0, 5, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 5
+                },
+                {
+                    "type": "physical",
+                    "value": 5
+                },
+                {
+                    "type": "energy",
+                    "value": 6
+                }
+            ],
+            "tecnologies": ["Indicadores de gobierno"],
+            "files": []
+        },
+        {
+            "id": "a32",
+            "name": "Medir el nivel de educación de la población",
+            "endmode": "auto",
+            "endtime": 2,
+            "zones": [0, 5, 0, 0, 0, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 5
+                },
+                {
+                    "type": "physical",
+                    "value": 5
+                },
+                {
+                    "type": "energy",
+                    "value": 6
+                }
+            ],
+            "tecnologies": ["Indicadores de educación"],
+            "files": []
+        },
+        {
+            "id": "a33",
+            "name": "Identificar el nivel de salud de la población",
+            "endmode": "auto",
+            "endtime": 2,
+            "zones": [5, 0, 0, 0, 0, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 5
+                },
+                {
+                    "type": "physical",
+                    "value": 5
+                },
+                {
+                    "type": "energy",
+                    "value": 6
+                }
+            ],
+            "tecnologies": ["Indicadores de Salud"],
+            "files": []
+        },
+        {
+            "id": "a34",
+            "name": "Conocer el nivel de seguridad percibido por la población",
+            "endmode": "auto",
+            "endtime": 2,
+            "zones": [0, 0, 0, 0, 0, 5],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 5
+                },
+                {
+                    "type": "physical",
+                    "value": 5
+                },
+                {
+                    "type": "energy",
+                    "value": 6
+                }
+            ],
+            "tecnologies": ["Indicadores de Seguridad"],
+            "files": []
+        },
+        {
+            "id": "a35",
+            "name": "Medir el desarrollo urbanístico de la ciudad",
+            "endmode": "auto",
+            "endtime": 2,
+            "zones": [0, 0, 5, 0, 0, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 5
+                },
+                {
+                    "type": "physical",
+                    "value": 5
+                },
+                {
+                    "type": "energy",
+                    "value": 6
+                }
+            ],
+            "tecnologies": ["Indicadores de Urbanismo"],
+            "files": []
+        },
+        {
+            "id": "a36",
+            "name": "Conocer el índice ambiental de la ciudad",
+            "endmode": "auto",
+            "endtime": 2,
+            "zones": [0, 0, 0, 5, 0, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 5
+                },
+                {
+                    "type": "physical",
+                    "value": 5
+                },
+                {
+                    "type": "energy",
+                    "value": 6
+                }
+            ],
+            "tecnologies": ["Indicadores de Medio Ambiente"],
+            "files": []
+        },
+        {
+            "id": "a37",
+            "name": "Implementar sistema de simulación para clases de conducción",
+            "endmode": "manual",
+            "endtime": 15,
+            "zones": [0, 9, -3, 0, 0, 2],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 5
+                },
+                {
+                    "type": "physical",
+                    "value": 14
+                },
+                {
+                    "type": "energy",
+                    "value": 15
+                }
+            ],
+            "tecnologies": ["Conductor experto"],
+            "files": []
+        },
+        {
+            "id": "a38",
+            "name": "Implementar voto electrónico",
+            "endmode": "auto",
+            "endtime": 2,
+            "zones": [0, 0, 0, 0, 5, 5],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 10
+                },
+                {
+                    "type": "physical",
+                    "value": 15
+                },
+                {
+                    "type": "energy",
+                    "value": 5
+                }
+            ],
+            "tecnologies": ["Blockchain"],
+            "files": []
+        },
+        {
+            "id": "a39",
+            "name": "Predicción de lluvias",
+            "endmode": "auto",
+            "endtime": 2,
+            "zones": [0, 0, 3, 0, 0, 3],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 5
+                },
+                {
+                    "type": "physical",
+                    "value": 8
+                },
+                {
+                    "type": "energy",
+                    "value": 5
+                }
+            ],
+            "tecnologies": ["PrevenGlobal", "SmartPrevention"],
+            "files": []
+        },
+        {
+            "id": "a40",
+            "name": "Prevención y atención de desastres",
+            "endmode": "auto",
+            "endtime": 2,
+            "zones": [3, 0, -2, 0, 2, 8],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 10
+                },
+                {
+                    "type": "physical",
+                    "value": 15
+                },
+                {
+                    "type": "energy",
+                    "value": 10
+                }
+            ],
+            "tecnologies": ["Computación cuántica", "Computación en la nube"],
+            "files": []
+        },
+        {
+            "id": "a41",
+            "name": "Préstamo de vehículos ecológicos",
+            "endmode": "manual",
+            "endtime": 10,
+            "zones": [1, 0, 0, 3, 0, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 10
+                },
+                {
+                    "type": "physical",
+                    "value": 10
+                },
+                {
+                    "type": "energy",
+                    "value": 5
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a42",
+            "name": "Adopción de sistema para el reporte de incidentes o accidentes",
+            "endmode": "auto",
+            "endtime": 2,
+            "zones": [1, 0, 0, 0, 0, 3],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 6
+                },
+                {
+                    "type": "physical",
+                    "value": 6
+                },
+                {
+                    "type": "energy",
+                    "value": 4
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a43",
+            "name": "Disminución del desempleo",
+            "endmode": "manual",
+            "endtime": 14,
+            "zones": [2, 0, 0, 0, 5, 1],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 12
+                },
+                {
+                    "type": "physical",
+                    "value": 12
+                },
+                {
+                    "type": "energy",
+                    "value": 10
+                }
+            ],
+            "tecnologies": [],
+            "files": ["Base de datos de empleos y empleados disponibles"]
+        },
+        {
+            "id": "a44",
+            "name": "Apoyar huertos urbanos",
+            "endmode": "auto",
+            "endtime": 3,
+            "zones": [0, 0, 3, 4, 0, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 8
+                },
+                {
+                    "type": "physical",
+                    "value": 8
+                },
+                {
+                    "type": "energy",
+                    "value": 3
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a45",
+            "name": "Salud preventiva",
+            "endmode": "auto",
+            "endtime": 3,
+            "zones": [5, 0, 0, 0, 0, 0],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 5
+                },
+                {
+                    "type": "physical",
+                    "value": 7
+                },
+                {
+                    "type": "energy",
+                    "value": 2
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        },
+        {
+            "id": "a46",
+            "name": "Estrategia de compartir viaje - transporte al trabajo",
+            "endmode": "auto",
+            "endtime": 3,
+            "zones": [0, 0, 0, 3, 0, 3],
+            "resources": [
+                {
+                    "type": "human",
+                    "value": 10
+                },
+                {
+                    "type": "physical",
+                    "value": 5
+                },
+                {
+                    "type": "energy",
+                    "value": 2
+                }
+            ],
+            "tecnologies": [],
+            "files": []
+        }
+    ],
+    "technologies": [
+        {
+            "id": "",
+            "name": "Tecnología",
+            "endmode": "Finalización",
+            "resources": [
+                { "type": "capacity", "value": 15 }
+            ],
+            "files": {
+                "in": [],
+                "out": []
+            }
+        },
+        {
+            "id": "t1",
+            "name": "Computación en la nube",
+            "endmode": "manual",
+            "resources": [
+                { "type": "capacity", "value": 10 }
+            ],
+            "files": {
+                "in": [],
+                "out": ["f1"]
+            }
+        },
+        {
+            "id": "t2",
+            "name": "Sistema GPS",
+            "endmode": "manual",
+            "resources": [
+                { "type": "capacity", "value": 3 }
+            ],
+            "files": {
+                "in": ["f1"],
+                "out": ["Plan de rutas"]
+            }
+        },
+        {
+            "id": "t3",
+            "name": "Optimizador de rutas de viaje",
+            "endmode": "auto",
+            "resources": [
+                { "type": "capacity", "value": 15 }
+            ],
+            "files": {
+                "in": [],
+                "out": []
+            }
+        },
+        {
+            "id": "t4",
+            "name": "Big Data",
+            "endmode": "manual",
+            "resources": [
+                { "type": "capacity", "value": 10 }
+            ],
+            "files": {
+                "in": [],
+                "out": []
+            }
+        },
+        {
+            "id": "t5",
+            "name": "Contenidos por Streaming",
+            "endmode": "manual",
+            "resources": [
+                { "type": "capacity", "value": 3 }
+            ],
+            "files": {
+                "in": [],
+                "out": ["Informe ambiental"]
+            }
+        },
+        {
+            "id": "t6",
+            "name": "Sistema de control ambiental",
+            "endmode": "auto",
+            "resources": [
+                { "type": "capacity", "value": 10 }
+            ],
+            "files": {
+                "in": [],
+                "out": ["Resultados de búsqueda"]
+            }
+        },
+        {
+            "id": "t7",
+            "name": "Asistente virtual",
+            "endmode": "auto",
+            "resources": [
+                { "type": "capacity", "value": 3 }
+            ],
+            "files": {
+                "in": [],
+                "out": []
+            }
+        },
+        {
+            "id": "t8",
+            "name": "Aplicación transporte público - Urbatrans",
+            "endmode": "auto",
+            "resources": [
+                { "type": "capacity", "value": 3 }
+            ],
+            "files": {
+                "in": [],
+                "out": ["Indicadores de gobierno"]
+            }
+        },
+        {
+            "id": "t9",
+            "name": "Plataforma de informe en línea de indicadores de gobierno",
+            "endmode": "auto",
+            "resources": [
+                { "type": "capacity", "value": 3 }
+            ],
+            "files": {
+                "in": [],
+                "out": ["Indicadores de educación"]
+            }
+        },
+        {
+            "id": "t10",
+            "name": "Análisis de datos de pruebas educativas",
+            "endmode": "auto",
+            "resources": [
+                { "type": "capacity", "value": 3 }
+            ],
+            "files": {
+                "in": [],
+                "out": ["Indicadores de Salud"]
+            }
+        },
+        {
+            "id": "t11",
+            "name": "Diagnóstico de estados de salud de la población",
+            "endmode": "auto",
+            "resources": [
+                { "type": "capacity", "value": 3 }
+            ],
+            "files": {
+                "in": [],
+                "out": ["Indicadores de Seguridad"]
+            }
+        },
+        {
+            "id": "t12",
+            "name": "Análisis de datos de percepción de la seguridad poblacional",
+            "endmode": "auto",
+            "resources": [
+                { "type": "capacity", "value": 3 }
+            ],
+            "files": {
+                "in": [],
+                "out": ["Indicadores de Urbanismo"]
+            }
+        },
+        {
+            "id": "t13",
+            "name": "Modelos de análisis de desarrollo urbanístico",
+            "endmode": "auto",
+            "resources": [
+                { "type": "capacity", "value": 3 }
+            ],
+            "files": {
+                "in": [],
+                "out": ["Indicadores de Medio Ambiente"]
+            }
+        },
+        {
+            "id": "t14",
+            "name": "Medición de magnitudes relevantes para el medio ambiente",
+            "endmode": "auto",
+            "resources": [
+                { "type": "capacity", "value": 5 }
+            ],
+            "files": {
+                "in": [],
+                "out": []
+            }
+        },
+        {
+            "id": "t15",
+            "name": "Simulador de conducción",
+            "endmode": "manual",
+            "resources": [
+                { "type": "capacity", "value": 8 }
+            ],
+            "files": {
+                "in": [],
+                "out": []
+            }
+        },
+        {
+            "id": "t16",
+            "name": "Blockchain",
+            "endmode": "manual",
+            "resources": [
+                { "type": "capacity", "value": 15 }
+            ],
+            "files": {
+                "in": [],
+                "out": []
+            }
+        },
+        {
+            "id": "t17",
+            "name": "Computación cuántica",
+            "endmode": "manual",
+            "resources": [
+                { "type": "capacity", "value": 15 }
+            ],
+            "files": {
+                "in": [],
+                "out": ["Base de datos de empleos y empleados disponibles"]
+            }
+        },
+        {
+            "id": "t18",
+            "name": "Análisis de base de datos",
+            "endmode": "manual",
+            "resources": [
+                { "type": "capacity", "value": 5 }
+            ],
+            "files": {
+                "in": [],
+                "out": []
+            }
+        },
+        {
+            "id": "t19",
+            "name": "Sistema de prevención de desastres",
+            "endmode": "manual",
+            "resources": [
+                { "type": "capacity", "value": 5 }
+            ],
+            "files": {
+                "in": [],
+                "out": []
+            }
+        },
+        {
+            "id": "t20",
+            "name": "",
+            "endmode": "manual",
+            "resources": [
+                { "type": "capacity", "value": 5 }
+            ],
+            "files": {
+                "in": [],
+                "out": []
+            }
+        },
+        {
+            "id": "t21",
+            "name": "Empowered edge",
+            "endmode": "manual",
+            "resources": [
+                { "type": "capacity", "value": 5 }
+            ],
+            "files": {
+                "in": [],
+                "out": []
+            }
+        },
+        {
+            "id": "t22",
+            "name": "Protección de contraseñas",
+            "endmode": "manual",
+            "resources": [
+                { "type": "capacity", "value": 10 }
+            ],
+            "files": {
+                "in": [],
+                "out": []
+            }
+        },
+        {
+            "id": "t23",
+            "name": "Computación en paralelo",
+            "endmode": "manual",
+            "resources": [
+                { "type": "capacity", "value": 10 }
+            ],
+            "files": {
+                "in": [],
+                "out": []
+            }
+        }
+    ],
+    "files": [
+        { "id": "f1", "name": "Datos de GPS", "type": "csv" },
+        { "id": "f2", "name": "XXXXX", "type": "txt" }
+    ]
+}

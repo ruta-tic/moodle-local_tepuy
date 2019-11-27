@@ -11,6 +11,8 @@ use Tepuy\AppCodeException;
 class SocketSessions {
     private static $_sessions = array();
     private static $_resources = array();
+    private static $_settings = array();
+    private static $_settingsbyuid = array();
 
     public static function addConnection($conn, $sess) {
 
@@ -29,8 +31,13 @@ class SocketSessions {
 
     public static function rmConnection($conn) {
         $session = self::getByResourceId($conn->resourceId);
-        $session->clients->detach($conn);
-        unset(self::$_resources[$conn->resourceId]);
+        if ($session) {
+            $session->clients->detach($conn);
+        }
+
+        if (isset(self::$_resources[$conn->resourceId])) {
+            unset(self::$_resources[$conn->resourceId]);
+        }
     }
 
     public static function isActiveSessKey($id) {
@@ -60,6 +67,46 @@ class SocketSessions {
     public static function getClientsById($id) {
         $session = self::getByResourceId($id);
         return !isset($session) ? null : $session->clients;
+    }
+
+    public static function setSettings($settings) {
+
+        self::$_settings = $settings;
+
+        self::$_settingsbyuid = array();
+        foreach($settings as $setting) {
+            $settingsdata = json_decode($setting->param1);
+            self::$_settingsbyuid[$setting->uid] = $settingsdata;
+        }
+    }
+
+    public static function getGameActions($id) {
+
+        $actions = self::getGameProperty($id, 'actions');
+
+        return !$actions ? array() : $actions;
+    }
+
+    public static function getGameKey($id) {
+        return self::getGameProperty($id, 'game');
+    }
+
+    private static function getGameProperty($id, $prop) {
+
+        if (!isset(self::$_resources[$id])) {
+            return null;
+        }
+
+        $resourceid = self::$_resources[$id];
+
+        if (isset(self::$_settingsbyuid[$resourceid])) {
+            $params = self::$_settingsbyuid[$resourceid];
+            if (property_exists($params, $prop)) {
+                return $params->$prop;
+            }
+        }
+
+        return null;
     }
 
     private static function getByResourceId($id) {

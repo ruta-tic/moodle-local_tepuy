@@ -13,6 +13,13 @@ use Tepuy\SocketSessions;
 class SocketController implements MessageComponentInterface {
 
     public function __construct() {
+        global $DB;
+
+        if (!$settings = $DB->get_records('local_tepuy_settings')) {
+            throw new \Exception(get_string('settingsnotfound', 'local_tepuy'));
+        }
+
+        SocketSessions::setSettings($settings);
     }
 
     public function onOpen(ConnectionInterface $conn) {
@@ -39,7 +46,7 @@ class SocketController implements MessageComponentInterface {
         $data = new \stdClass();
         $data->action = 'playerconnected';
 
-        $action = new Action($this, $conn, $data);
+        $action = new Action($conn, $data);
         $action->run();
     }
 
@@ -60,7 +67,7 @@ class SocketController implements MessageComponentInterface {
             Messages::error('actionrequired', null, $from);
         }
 
-        $action = new Action($this, $from, $json);
+        $action = new Action($from, $json);
         $action->run();
     }
 
@@ -76,7 +83,7 @@ class SocketController implements MessageComponentInterface {
         $data->action = 'playerdisconnected';
 
         if (SocketSessions::isActiveSessKey($conn->resourceId)) {
-            $action = new Action($this, $conn, $data);
+            $action = new Action($conn, $data);
             $action->run();
         }
     }
