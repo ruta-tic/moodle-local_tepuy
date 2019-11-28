@@ -49,9 +49,9 @@ $string['notrequiredtechnologies'] = 'Current game does not have the required te
 $string['notresources'] = 'Current game does not have resources to it';
 $string['notrunningaction'] = 'Action not running';
 $string['notrunningtech'] = 'Technology not running';
-$string[''] = '';
-$string[''] = '';
-$string[''] = '';
+$string['crontask'] = 'Tepuy cron';
+$string['components_socket_cronuri'] = 'Cron URI to component -socket-';
+$string['components_socket_cronuri_desc'] = 'Something like ws://localhost:1234?skey=XXXXXXXXXXXXXXXXXXXXXXXXX';
 $string[''] = '';
 
 
