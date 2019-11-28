@@ -75,6 +75,7 @@ class Action {
 
     }
 
+    // General actions.
     private function action_chatmsg() {
         global $CFG, $DB;
 
@@ -274,6 +275,61 @@ class Action {
         return true;
     }
 
+    private function action_playerconnected() {
+
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        $data = new \stdClass();
+        $data->id = $this->user->id;
+        $data->name = $this->user->firstname;
+
+        $msg = $this->getResponse($data);
+        $msg = json_encode($msg);
+
+        $clients = SocketSessions::getClientsById($this->from->resourceId);
+        foreach ($clients as $client) {
+            if ($client !== $this->from &&
+                    SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
+                // The sender is not the receiver, send to each client connected into same group.
+                $client->send($msg);
+            }
+        }
+
+        $this->notifyActionToAll();
+
+        return true;
+    }
+
+    private function action_playerdisconnected() {
+
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        $data = new \stdClass();
+        $data->id = $this->user->id;
+        $data->name = $this->user->firstname;
+
+        $msg = $this->getResponse($data);
+        $msg = json_encode($msg);
+
+        $clients = SocketSessions::getClientsById($this->from->resourceId);
+        foreach ($clients as $client) {
+            if ($client !== $this->from &&
+                    SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
+                // The sender is not the receiver, send to each client connected into same group.
+                $client->send($msg);
+            }
+        }
+
+        $this->notifyActionToAll();
+
+        return true;
+    }
+
+    // Specific actions to GameAngi.
     private function action_playcard() {
 
         if (!$this->session->groupid) {
@@ -403,62 +459,7 @@ class Action {
         return true;
     }
 
-    private function action_playerconnected() {
-
-        if (!$this->session->groupid) {
-            Messages::error('notgroupnotteam', null, $this->from);
-        }
-
-        $data = new \stdClass();
-        $data->id = $this->user->id;
-        $data->name = $this->user->firstname;
-
-        $msg = $this->getResponse($data);
-        $msg = json_encode($msg);
-
-        $clients = SocketSessions::getClientsById($this->from->resourceId);
-        foreach ($clients as $client) {
-            if ($client !== $this->from &&
-                    SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
-                // The sender is not the receiver, send to each client connected into same group.
-                $client->send($msg);
-            }
-        }
-
-        $this->notifyActionToAll();
-
-        return true;
-    }
-
-    private function action_playerdisconnected() {
-
-        if (!$this->session->groupid) {
-            Messages::error('notgroupnotteam', null, $this->from);
-        }
-
-        $data = new \stdClass();
-        $data->id = $this->user->id;
-        $data->name = $this->user->firstname;
-
-        $msg = $this->getResponse($data);
-        $msg = json_encode($msg);
-
-        $clients = SocketSessions::getClientsById($this->from->resourceId);
-        foreach ($clients as $client) {
-            if ($client !== $this->from &&
-                    SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
-                // The sender is not the receiver, send to each client connected into same group.
-                $client->send($msg);
-            }
-        }
-
-        $this->notifyActionToAll();
-
-        return true;
-    }
-
     // Specific SmartCity actions.
-
     private function action_sc_gamestart() {
 
         if (!$this->session->groupid) {
@@ -500,7 +501,247 @@ class Action {
         return true;
     }
 
+    private function action_sc_changetimeframe() {
 
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        if (!property_exists($this->request, 'data') ||
+                !property_exists($this->request->data, 'timeframe')
+            ) {
+
+            Messages::error('fieldrequired', 'timeframe', $this->from);
+        }
+
+        $game = new SmartCity($this->session->groupid);
+
+        $changed = false;
+        try {
+            $changed = $game->changeTimeframe($this->request->data->timeframe);
+        } catch (ByCodeException $ce) {
+            Messages::error($ce->getMessage(), null, $this->from);
+        }
+
+        if ($changed) {
+            $data = new \stdClass();
+            $data->timeframe = $this->request->data->timeframe;
+            $data->duedate = $game->getDuedate();
+
+            $msg = $this->getResponse($data);
+            $msg = json_encode($msg);
+
+            $clients = SocketSessions::getClientsById($this->from->resourceId);
+            foreach ($clients as $client) {
+                if (SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
+                    // Send to each client connected into same group, including the sender.
+                    $client->send($msg);
+                }
+            }
+
+            Logging::trace(Logging::LVL_DETAIL, 'Change the timeframe: ' . $this->request->data->timeframe);
+            $this->notifyActionToAll();
+        }
+
+        return true;
+    }
+
+    private function action_sc_playaction() {
+
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        if (!property_exists($this->request, 'data') ||
+                !property_exists($this->request->data, 'id')
+            ) {
+
+            Messages::error('fieldrequired', 'id', $this->from);
+        }
+
+        if (property_exists($this->request->data, 'parameters')) {
+            $parameters = $this->request->data->parameters;
+        } else {
+            $parameters = array();
+        }
+
+        $game = new SmartCity($this->session->groupid);
+
+        $runningact = null;
+        try {
+            $runningact = $game->playAction($this->user->id, $this->request->data->id, $parameters);
+        } catch (ByCodeException $ce) {
+            Messages::error($ce->getMessage(), null, $this->from);
+        }
+
+        if ($runningact) {
+            $data = new \stdClass();
+            $data->id = $runningact->id;
+            $data->starttime = $runningact->starttime;
+            $data->resources = $game->availableResources();
+
+            $msg = $this->getResponse($data);
+            $msg = json_encode($msg);
+
+            $clients = SocketSessions::getClientsById($this->from->resourceId);
+            foreach ($clients as $client) {
+                if (SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
+                    // Send to each client connected into same group, including the sender.
+                    $client->send($msg);
+                }
+            }
+
+            Logging::trace(Logging::LVL_DETAIL, 'Play activity: ' . $this->request->data->id);
+            $this->notifyActionToAll();
+        }
+
+        return true;
+    }
+
+    private function action_sc_stopaction() {
+
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        if (!property_exists($this->request, 'data') ||
+                !property_exists($this->request->data, 'id')
+            ) {
+
+            Messages::error('fieldrequired', 'id', $this->from);
+        }
+
+        $game = new SmartCity($this->session->groupid);
+
+        $runningact = null;
+        try {
+            $stoped = $game->stopAction($this->user->id, $this->request->data->id);
+        } catch (ByCodeException $ce) {
+            Messages::error($ce->getMessage(), null, $this->from);
+        }
+
+        if ($stoped) {
+            $data = new \stdClass();
+            $data->id = $this->request->data->id;
+            $data->resources = $game->availableResources();
+
+            $msg = $this->getResponse($data);
+            $msg = json_encode($msg);
+
+            $clients = SocketSessions::getClientsById($this->from->resourceId);
+            foreach ($clients as $client) {
+                if (SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
+                    // Send to each client connected into same group, including the sender.
+                    $client->send($msg);
+                }
+            }
+
+            Logging::trace(Logging::LVL_DETAIL, 'Stop activity: ' . $this->request->data->id);
+            $this->notifyActionToAll();
+        }
+
+        return true;
+    }
+
+    private function action_sc_playtechnology() {
+
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        if (!property_exists($this->request, 'data') ||
+                !property_exists($this->request->data, 'id')
+            ) {
+
+            Messages::error('fieldrequired', 'id', $this->from);
+        }
+
+        if (property_exists($this->request->data, 'parameters')) {
+            $parameters = $this->request->data->parameters;
+        } else {
+            $parameters = array();
+        }
+
+        $game = new SmartCity($this->session->groupid);
+
+        $runningtech = null;
+        try {
+            $runningtech = $game->playTechnology($this->user->id, $this->request->data->id, $parameters);
+        } catch (ByCodeException $ce) {
+            Messages::error($ce->getMessage(), null, $this->from);
+        }
+
+        if ($runningtech) {
+            $data = new \stdClass();
+            $data->id = $runningtech->id;
+            $data->starttime = $runningtech->starttime;
+            $data->resources = $game->availableTechResources();
+
+            $msg = $this->getResponse($data);
+            $msg = json_encode($msg);
+
+            $clients = SocketSessions::getClientsById($this->from->resourceId);
+            foreach ($clients as $client) {
+                if (SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
+                    // Send to each client connected into same group, including the sender.
+                    $client->send($msg);
+                }
+            }
+
+            Logging::trace(Logging::LVL_DETAIL, 'Play technology: ' . $this->request->data->id);
+            $this->notifyActionToAll();
+        }
+
+        return true;
+    }
+
+    private function action_sc_stoptechnology() {
+
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        if (!property_exists($this->request, 'data') ||
+                !property_exists($this->request->data, 'id')
+            ) {
+
+            Messages::error('fieldrequired', 'id', $this->from);
+        }
+
+        $game = new SmartCity($this->session->groupid);
+
+        $runningtech = null;
+        try {
+            $stoped = $game->stopTechnology($this->user->id, $this->request->data->id);
+        } catch (ByCodeException $ce) {
+            Messages::error($ce->getMessage(), null, $this->from);
+        }
+
+        if ($stoped) {
+            $data = new \stdClass();
+            $data->id = $this->request->data->id;
+            $data->resources = $game->availableTechResources();
+
+            $msg = $this->getResponse($data);
+            $msg = json_encode($msg);
+
+            $clients = SocketSessions::getClientsById($this->from->resourceId);
+            foreach ($clients as $client) {
+                if (SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
+                    // Send to each client connected into same group, including the sender.
+                    $client->send($msg);
+                }
+            }
+
+            Logging::trace(Logging::LVL_DETAIL, 'Stop technology: ' . $this->request->data->id);
+            $this->notifyActionToAll();
+        }
+
+        return true;
+    }
+
+
+    // Internal methods.
     private function getChatUser() {
         global $DB;
 

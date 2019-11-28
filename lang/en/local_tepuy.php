@@ -44,6 +44,15 @@ $string['notmembersingroup'] = 'Not members in group {$a}';
 $string['restardbconnection'] = 'The DB connection was restarted';
 $string['fieldrequired'] = 'The field {$a} is required.';
 $string['errorgamestart'] = 'A game is active currently';
+$string['notrequiredfiles'] = 'Current game does not have the required files';
+$string['notrequiredtechnologies'] = 'Current game does not have the required technologies';
+$string['notresources'] = 'Current game does not have resources to it';
+$string['notrunningaction'] = 'Action not running';
+$string['notrunningtech'] = 'Technology not running';
+$string[''] = '';
+$string[''] = '';
+$string[''] = '';
+$string[''] = '';
 
 
 // Original chat system messages

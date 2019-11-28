@@ -186,7 +186,7 @@ class SmartCity {
             $newgame->state = self::STATE_LOCKED;
             $newgame->score = 0;
             $newgame->level = SmartCityLevels::DEFAULT;
-            $newgame->activities = $actions;
+            $newgame->actions = $actions;
             $newgame->technologies = $techs;
             $games[] = $newgame;
         }
@@ -332,11 +332,11 @@ class SmartCity {
             $pos++;
         }
 
-        $res->available = $this->_currentgame->activities[$pos];
+        $res->available = $this->_currentgame->actions[$pos];
 
         if ($this->_currentrunning) {
             $res->running = $this->_currentrunning->actions;
-            $res->resources = self::$_data->calculateResources($this->_currentrunning->actions, $this->_level->resources);
+            $res->resources = $this->availableResources();
         }
 
         return $res;
@@ -364,8 +364,7 @@ class SmartCity {
 
         if ($this->_currentrunning) {
             $res->running = $this->_currentrunning->technologies;
-            $res->resources = self::$_data->calculateTechResources($this->_currentrunning->technologies,
-                                                                    $this->_level->techresources);
+            $res->resources = $this->availableTechResources();
         }
 
         return $res;
@@ -447,11 +446,309 @@ class SmartCity {
         return null;
     }
 
+    public function changeTimeframe($timeframe) {
+        global $DB;
+
+        if ($this->summary->timeframe == $timeframe || ($timeframe != 1 && $timeframe != 5)) {
+            return false;
+        }
+
+        $this->summary->timeframe = $timeframe;
+
+        $params = array();
+        $params['id'] = $this->summary->id;
+        $params['timeframe'] = $timeframe;
+
+        return $DB->update_record('local_tepuy_gamesmartcity', $params);
+    }
+
+    public function playAction($userid, $actid, $parameters) {
+        global $DB;
+
+        if (!self::$_data->isValidAction($actid)) {
+            Logging::trace(Logging::LVL_DEBUG, 'Invalid action: ' . $actid);
+            return false;
+        }
+
+        $useracts = $this->getActions($userid);
+        if (!in_array($actid, $useracts->available)) {
+            Logging::trace(Logging::LVL_DEBUG, 'Not user assigned action: ' . $actid);
+            return false;
+        }
+
+        // Check if act is running.
+        foreach($useracts->running as $runningact) {
+            if ($actid == $runningact->id) {
+                Logging::trace(Logging::LVL_DEBUG, 'Action is running: ' . $actid);
+                return false;
+            }
+        }
+
+        if (!$this->checkInFilesAction($actid, $parameters)) {
+            Logging::trace(Logging::LVL_DEBUG, 'It does not have the required files to action: ' . $actid);
+            throw new ByCodeException('notrequiredfiles');
+            return false;
+        }
+
+        if (!$this->checkTechnologiesToAction($actid)) {
+            Logging::trace(Logging::LVL_DEBUG, 'It does not have the required technologies to action: ' . $actid);
+            throw new ByCodeException('notrequiredtechnologies');
+            return false;
+        }
+
+        if (!$this->hasResourcesToAction($actid)) {
+            Logging::trace(Logging::LVL_DEBUG, 'It does not have resources to technology: ' . $actid);
+            throw new ByCodeException('notresources');
+            return false;
+        }
+
+        $runningact = new \stdClass();
+        $runningact->id = $actid;
+        $runningact->starttime = time();
+        $this->_currentrunning->actions[] = $runningact;
+
+        $params = array();
+        $params['id'] = $this->_currentrunning->id;
+        $params['actions'] = json_encode($this->_currentrunning->actions);
+
+        $DB->update_record('local_tepuy_gamesmartcity_running', $params);
+
+        return $runningact;
+    }
+
+    public function stopAction($userid, $actid) {
+        global $DB;
+
+        if (!self::$_data->isValidAction($actid)) {
+            Logging::trace(Logging::LVL_DEBUG, 'Invalid action: ' . $actid);
+            return false;
+        }
+
+        $useracts = $this->getActions($userid);
+        if (!in_array($actid, $useracts->available)) {
+            Logging::trace(Logging::LVL_DEBUG, 'Not user assigned action: ' . $actid);
+            return false;
+        }
+
+        // Check if act is running.
+        $running = false;
+        foreach($this->_currentrunning->actions as $key => $runningact) {
+            if ($actid == $runningact->id) {
+                unset($this->_currentrunning->actions[$key]);
+                $running = true;
+                break;
+            }
+        }
+
+        if (!$running) {
+            Logging::trace(Logging::LVL_DEBUG, 'Action not running: ' . $actid);
+            throw new ByCodeException('notrunningaction');
+            return false;
+        }
+
+        $params = array();
+        $params['id'] = $this->_currentrunning->id;
+        $params['actions'] = json_encode($this->_currentrunning->actions);
+
+        $DB->update_record('local_tepuy_gamesmartcity_running', $params);
+
+        return true;
+    }
+
+    public function playTechnology($userid, $techid, $parameters) {
+        global $DB;
+
+        if (!self::$_data->isValidTech($techid)) {
+            Logging::trace(Logging::LVL_DEBUG, 'Invalid technology: ' . $techid);
+            return false;
+        }
+
+        $usertechs = $this->getTechnologies($userid);
+        if (!in_array($techid, $usertechs->available)) {
+            Logging::trace(Logging::LVL_DEBUG, 'Not user assigned technology: ' . $techid);
+            return false;
+        }
+
+        // Check if the technology is running.
+        foreach($usertechs->running as $runningtech) {
+            if ($techid == $runningtech->id) {
+                Logging::trace(Logging::LVL_DEBUG, 'Technology is running: ' . $techid);
+                return false;
+            }
+        }
+
+        if (!$this->checkInFilesTech($techid, $parameters)) {
+            throw new ByCodeException('notrequiredfiles');
+            Logging::trace(Logging::LVL_DEBUG, 'It does not have the required files to technology: ' . $techid);
+            return false;
+        }
+
+        if (!$this->hasResourcesToTech($techid)) {
+            throw new ByCodeException('notresources');
+            Logging::trace(Logging::LVL_DEBUG, 'It does not have resources to technology: ' . $techid);
+            return false;
+        }
+
+        $runningtech = new \stdClass();
+        $runningtech->id = $techid;
+        $runningtech->starttime = time();
+        $this->_currentrunning->technologies[] = $runningtech;
+
+        $params = array();
+        $params['id'] = $this->_currentrunning->id;
+        $params['technologies'] = json_encode($this->_currentrunning->technologies);
+
+        $DB->update_record('local_tepuy_gamesmartcity_running', $params);
+
+        return $runningtech;
+    }
+
+    public function stopTechnology($userid, $techid) {
+        global $DB;
+
+        if (!self::$_data->isValidTech($techid)) {
+            Logging::trace(Logging::LVL_DEBUG, 'Invalid technology: ' . $techid);
+            return false;
+        }
+
+        $usertechs = $this->getTechnologies($userid);
+        if (!in_array($techid, $usertechs->available)) {
+            Logging::trace(Logging::LVL_DEBUG, 'Not user assigned technology: ' . $techid);
+            return false;
+        }
+
+        // Check if technology is running.
+        $running = false;
+        foreach($this->_currentrunning->technologies as $key => $runningtech) {
+            if ($techid == $runningtech->id) {
+                unset($this->_currentrunning->technologies[$key]);
+                $running = true;
+                break;
+            }
+        }
+
+        if (!$running) {
+            Logging::trace(Logging::LVL_DEBUG, 'Technology not running: ' . $techid);
+            throw new ByCodeException('notrunningtech');
+            return false;
+        }
+
+        $params = array();
+        $params['id'] = $this->_currentrunning->id;
+        $params['technologies'] = json_encode($this->_currentrunning->technologies);
+
+        $DB->update_record('local_tepuy_gamesmartcity_running', $params);
+
+        return true;
+    }
+
+    public function availableResources() {
+        return self::$_data->calculateResources($this->_currentrunning->actions, $this->_level->resources);
+    }
+
+    public function availableTechResources() {
+        return self::$_data->calculateTechResources($this->_currentrunning->technologies,
+                                                                    $this->_level->techresources);
+    }
+
+    public function hasResourcesToTech($techid) {
+        $tech = self::$_data->technologiesbyid[$techid];
+        $resources = $this->availableResources();
+
+        foreach($tech->resources as $required) {
+
+            foreach($resources as $key => $resource) {
+                if ($key == $required->type) {
+                    if ($resource < $required->value) {
+                        return false;
+                    }
+                    break;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public function hasResourcesToAction($actid) {
+        $act = self::$_data->actionsbyid[$actid];
+        $resources = $this->availableResources();
+
+        foreach($act->resources as $required) {
+
+            foreach($resources as $key => $resource) {
+                if ($key == $required->type) {
+                    if ($resource < $required->value) {
+                        return false;
+                    }
+                    break;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public function checkInFilesTech($techid, $params) {
+
+        // $params is not used into server side validation. The validation is with existing files.
+
+        $tech = self::$_data->technologiesbyid[$techid];
+        $files = $this->getFiles();
+
+        foreach($tech->files->in as $file) {
+            if (!in_array($file, $files)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function checkInFilesAction($actid, $params) {
+
+        // $params is not used into server side validation. The current validation is with existing files.
+
+        $act = self::$_data->actionsbyid[$actid];
+        $currentfiles = $this->getFiles();
+
+        foreach($act->files as $file) {
+            if (!in_array($file, $currentfiles)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function checkTechnologiesToAction($actid) {
+
+        $act = self::$_data->actionsbyid[$actid];
+        $runningtechs = $this->_currentrunning->technologies;
+
+        foreach($act->technologies as $tech) {
+            $available = false;
+            foreach($runningtechs as $running) {
+                if ($running->id == $tech) {
+                    $available = true;
+                    break;
+                }
+            }
+
+            if (!$available) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private static function loadData() {
         $json = file_get_contents(self::SOURCE_DATA);
         $data = json_decode($json);
 
         self::$_data = new SmartCityData($data->actions, $data->technologies, $data->files);
+        Logging::trace(Logging::LVL_DETAIL, 'Data for SmartCity game loaded.');
 
         return true;
     }
@@ -528,7 +825,7 @@ class SmartCityData {
 
         $this->actionsbyid = array();
         foreach($this->actions as $action) {
-            $this->actionsbyid[$action->id] = $actions;
+            $this->actionsbyid[$action->id] = $action;
         }
 
         $this->technologiesbyid = array();
@@ -567,7 +864,7 @@ class SmartCityData {
 
         } while($assignedcount < $fullsize && $iteractions < 1000);
 
-        // Assign free activities when randomly was not assigned in minimus interactions.
+        // Assign free actions when randomly was not assigned in minimus interactions.
         foreach($free as $key => $one) {
             if (!$one) {
                 continue;
@@ -626,12 +923,12 @@ class SmartCityData {
         return $res;
     }
 
-    public function calculateResources($activities, $resourcesbylevel) {
+    public function calculateResources($actions, $resourcesbylevel) {
 
-        foreach($activities as $activity) {
-            $activitydata = $this->actionsbyid[$activity->id];
+        foreach($actions as $action) {
+            $actiondata = $this->actionsbyid[$action->id];
 
-            foreach($activitydata->resources as $key => $resource) {
+            foreach($actiondata->resources as $key => $resource) {
                 $resourcesbylevel[$resource->type] -= $resource->value;
             }
         }
@@ -652,4 +949,11 @@ class SmartCityData {
         return $resourcesbylevel;
     }
 
+    public function isValidAction($actid) {
+        return isset($this->actionsbyid[$actid]);
+    }
+
+    public function isValidTech($techid) {
+        return isset($this->technologiesbyid[$techid]);
+    }
 }

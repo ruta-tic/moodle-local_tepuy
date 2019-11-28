@@ -20,7 +20,7 @@
                     "value": 10
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -43,7 +43,7 @@
                     "value": 5
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -66,7 +66,7 @@
                     "value": 10
                 }
             ],
-            "tecnologies": ["E-Learning", "Redes sociales"],
+            "technologies": ["E-Learning", "Redes sociales"],
             "files": []
         },
         {
@@ -89,7 +89,7 @@
                     "value": 5
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -112,7 +112,7 @@
                     "value": 5
                 }
             ],
-            "tecnologies": ["Big Data"],
+            "technologies": ["t4"],
             "files": []
         },
         {
@@ -135,7 +135,7 @@
                     "value": 10
                 }
             ],
-            "tecnologies": ["Interconnect"],
+            "technologies": ["Interconnect"],
             "files": []
         },
         {
@@ -158,7 +158,7 @@
                     "value": 5
                 }
             ],
-            "tecnologies": ["E-Learning"],
+            "technologies": ["E-Learning"],
             "files": []
         },
         {
@@ -181,7 +181,7 @@
                     "value": 12
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -204,7 +204,7 @@
                     "value": 12
                 }
             ],
-            "tecnologies": ["Contenidos por Streaming"],
+            "technologies": ["Contenidos por Streaming"],
             "files": []
         },
         {
@@ -227,7 +227,7 @@
                     "value": 6
                 }
             ],
-            "tecnologies": ["Password Secure", "Paralely"],
+            "technologies": ["Password Secure", "Paralely"],
             "files": []
         },
         {
@@ -250,7 +250,7 @@
                     "value": 3
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -273,7 +273,7 @@
                     "value": 4
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -296,7 +296,7 @@
                     "value": 5
                 }
             ],
-            "tecnologies": ["Localízate y Optitravel"],
+            "technologies": ["Localízate y Optitravel"],
             "files": ["Plan de rutas"]
         },
         {
@@ -319,7 +319,7 @@
                     "value": 8
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -342,7 +342,7 @@
                     "value": 12
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -365,7 +365,7 @@
                     "value": 12
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -388,7 +388,7 @@
                     "value": 20
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -411,7 +411,7 @@
                     "value": 5
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -434,7 +434,7 @@
                     "value": 10
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -457,7 +457,7 @@
                     "value": 5
                 }
             ],
-            "tecnologies": ["Computación en la nube"],
+            "technologies": ["Computación en la nube"],
             "files": []
         },
         {
@@ -480,7 +480,7 @@
                     "value": 3
                 }
             ],
-            "tecnologies": ["SICOA"],
+            "technologies": ["SICOA"],
             "files": ["Informe ambiental"]
         },
         {
@@ -503,7 +503,7 @@
                     "value": 10
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -526,7 +526,7 @@
                     "value": 8
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -549,7 +549,7 @@
                     "value": 12
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -572,7 +572,7 @@
                     "value": 8
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -595,7 +595,7 @@
                     "value": 12
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -618,7 +618,7 @@
                     "value": 12
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -641,7 +641,7 @@
                     "value": 10
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -664,7 +664,7 @@
                     "value": 7
                 }
             ],
-            "tecnologies": ["Tu solución"],
+            "technologies": ["Tu solución"],
             "files": ["Resultados de búsqueda"]
         },
         {
@@ -687,7 +687,7 @@
                     "value": 2
                 }
             ],
-            "tecnologies": ["Aplicación transporte público - Urbatrans"],
+            "technologies": ["Aplicación transporte público - Urbatrans"],
             "files": []
         },
         {
@@ -710,7 +710,7 @@
                     "value": 6
                 }
             ],
-            "tecnologies": ["Indicadores de gobierno"],
+            "technologies": ["Indicadores de gobierno"],
             "files": []
         },
         {
@@ -733,7 +733,7 @@
                     "value": 6
                 }
             ],
-            "tecnologies": ["Indicadores de educación"],
+            "technologies": ["Indicadores de educación"],
             "files": []
         },
         {
@@ -756,7 +756,7 @@
                     "value": 6
                 }
             ],
-            "tecnologies": ["Indicadores de Salud"],
+            "technologies": ["Indicadores de Salud"],
             "files": []
         },
         {
@@ -779,7 +779,7 @@
                     "value": 6
                 }
             ],
-            "tecnologies": ["Indicadores de Seguridad"],
+            "technologies": ["Indicadores de Seguridad"],
             "files": []
         },
         {
@@ -802,7 +802,7 @@
                     "value": 6
                 }
             ],
-            "tecnologies": ["Indicadores de Urbanismo"],
+            "technologies": ["Indicadores de Urbanismo"],
             "files": []
         },
         {
@@ -825,7 +825,7 @@
                     "value": 6
                 }
             ],
-            "tecnologies": ["Indicadores de Medio Ambiente"],
+            "technologies": ["Indicadores de Medio Ambiente"],
             "files": []
         },
         {
@@ -848,7 +848,7 @@
                     "value": 15
                 }
             ],
-            "tecnologies": ["Conductor experto"],
+            "technologies": ["Conductor experto"],
             "files": []
         },
         {
@@ -871,7 +871,7 @@
                     "value": 5
                 }
             ],
-            "tecnologies": ["Blockchain"],
+            "technologies": ["Blockchain"],
             "files": []
         },
         {
@@ -894,7 +894,7 @@
                     "value": 5
                 }
             ],
-            "tecnologies": ["PrevenGlobal", "SmartPrevention"],
+            "technologies": ["PrevenGlobal", "SmartPrevention"],
             "files": []
         },
         {
@@ -917,7 +917,7 @@
                     "value": 10
                 }
             ],
-            "tecnologies": ["Computación cuántica", "Computación en la nube"],
+            "technologies": ["Computación cuántica", "Computación en la nube"],
             "files": []
         },
         {
@@ -940,7 +940,7 @@
                     "value": 5
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -963,7 +963,7 @@
                     "value": 4
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -986,7 +986,7 @@
                     "value": 10
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": ["Base de datos de empleos y empleados disponibles"]
         },
         {
@@ -1009,7 +1009,7 @@
                     "value": 3
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -1032,7 +1032,7 @@
                     "value": 2
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         },
         {
@@ -1044,7 +1044,7 @@
             "resources": [
                 {
                     "type": "human",
-                    "value": 10
+                    "value": 80
                 },
                 {
                     "type": "physical",
@@ -1055,7 +1055,7 @@
                     "value": 2
                 }
             ],
-            "tecnologies": [],
+            "technologies": [],
             "files": []
         }
     ],
