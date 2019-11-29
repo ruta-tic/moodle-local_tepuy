@@ -29,13 +29,12 @@ use Tepuy\SocketSessions;
 class Action {
 
     // The only valid actions.
-    const AVAILABLES = array('chatmsg', 'chathistory', 'gamestate', 'playerconnected', 'playerdisconnected',
+    const AVAILABLES = array('chatmsg', 'chathistory', 'gamestate', 'playerconnected', 'playerdisconnected', 'execron',
                                 // Actions to GameAngi.
                                 'playcard', 'unplaycard', 'endcase',
                                 // Actions to Games SmartCity and Pandemia.
                                 'sc_gamestart', 'sc_changetimeframe', 'sc_playaction',
-                                'sc_playtechnology', 'sc_stopaction', 'sc_stoptechnology', 'sc_actioncompleted',
-                                'sc_technologycompleted', 'sc_healthupdate', 'sc_gameover');
+                                'sc_playtechnology', 'sc_stopaction', 'sc_stoptechnology');
 
     public $action;
 
@@ -49,16 +48,18 @@ class Action {
 
     public static $chats = array();
 
-    public function __construct($from, $request) {
+    public function __construct($from, $request, $validate = true) {
         global $DB;
 
-        if (!in_array($request->action, self::AVAILABLES)) {
-            Messages::error('invalidaction', $request->action, $from);
-        }
+        if ($validate) {
+            if (!in_array($request->action, self::AVAILABLES)) {
+                Messages::error('invalidaction', $request->action, $from);
+            }
 
-        $gameactions = SocketSessions::getGameActions($from->resourceId);
-        if (!in_array($request->action, $gameactions)) {
-            Messages::error('invalidaction', $request->action, $from);
+            $gameactions = SocketSessions::getGameActions($from->resourceId);
+            if (!in_array($request->action, $gameactions)) {
+                Messages::error('invalidaction', $request->action, $from);
+            }
         }
 
         $this->from = $from;
@@ -68,20 +69,27 @@ class Action {
         $this->user = $DB->get_record('user', array('id' => $this->session->userid));
     }
 
-    public function run() {
+    public function run($params = null) {
         $method = 'action_' . $this->action;
 
-        return $this->$method();
-
+        if ($params) {
+            return $this->$method($params);
+        } else {
+            return $this->$method();
+        }
     }
 
     // General actions.
-    private function action_chatmsg() {
+    private function action_chatmsg($params = null) {
         global $CFG, $DB;
 
         require_once($CFG->dirroot . '/mod/chat/lib.php');
 
-        $chatuser = $this->getChatUser();
+        if ($params && isset($params['groupid']) {
+            $chatuser = $this->getChatUserByGroupid($params['groupid']);
+        } else {
+            $chatuser = $this->getChatUser();
+        }
 
         if (!property_exists($this->request, 'issystem')) {
             $this->request->issystem = false;
@@ -104,7 +112,13 @@ class Action {
 
         if ($this->request->issystem) {
             if (strpos($this->request->data, 'action') === 0) {
-                $data->msg = get_string('message' . $this->request->data, 'local_tepuy', $this->user->firstname) . '';
+                if ($params && isset($params['lang'])) {
+                    $a = $params['lang'];
+                } else {
+                    $a = $this->user->firstname;
+                }
+
+                $data->msg = get_string('message' . $this->request->data, 'local_tepuy', $a) . '';
             }
             else {
                 $msg->msg = $this->request->data;
@@ -325,6 +339,32 @@ class Action {
         }
 
         $this->notifyActionToAll();
+
+        return true;
+    }
+
+    private function action_execron() {
+
+        $res = array();
+
+        $res['SmartCity'] = new \stdClass();
+        $matches = SmartCity::getMatches();
+
+        $processed = 0;
+        foreach($matches as $match) {
+            $game = new SmartCity($match->groupid);
+            $game->cron($this);
+            $processed++;
+        }
+
+        $res['SmartCity']->matches = $processed;
+
+        $msg = $this->getResponse($res);
+        $msg = json_encode($msg);
+
+        $this->from->send($msg);
+
+        Logging::trace(Logging::LVL_DETAIL, 'Cron excecuted.');
 
         return true;
     }
@@ -591,7 +631,7 @@ class Action {
                 }
             }
 
-            Logging::trace(Logging::LVL_DETAIL, 'Play activity: ' . $this->request->data->id);
+            Logging::trace(Logging::LVL_DETAIL, 'Play action: ' . $this->request->data->id);
             $this->notifyActionToAll();
         }
 
@@ -636,7 +676,7 @@ class Action {
                 }
             }
 
-            Logging::trace(Logging::LVL_DETAIL, 'Stop activity: ' . $this->request->data->id);
+            Logging::trace(Logging::LVL_DETAIL, 'Stop action: ' . $this->request->data->id);
             $this->notifyActionToAll();
         }
 
@@ -740,6 +780,65 @@ class Action {
         return true;
     }
 
+    // It's a special action because this is a cron's action.
+    private function sc_actioncompleted($requestdata) {
+
+        $data = new \stdClass();
+        $data->id = $requestdata->id;
+        $data->resources = $requestdata->resources;
+
+        $msg = $this->getResponse($data);
+        $msg = json_encode($msg);
+
+        $clients = SocketSessions::getClientsById($this->from->resourceId);
+        foreach ($clients as $client) {
+            if (SocketSessions::getSSById($client->resourceId)->groupid == $requestdata->groupid) {
+                // Send to each client connected into same group, including the sender.
+                $client->send($msg);
+            }
+        }
+
+        Logging::trace(Logging::LVL_DETAIL, 'Action completed: ' . $requestdata->id);
+
+        $params = array();
+        $params['groupid'] = $requestdata->groupid;
+        $params['lang'] = $requestdata->name;
+        $this->notifyActionToAll('actionendaction', false, $params);
+
+        return true;
+    }
+
+    // It is a special action because is used by cron.
+    private function sc_technologycompleted($requestdata) {
+
+        $data = new \stdClass();
+        $data->id = $requestdata->id;
+        $data->resources = $requestdata->resources;
+        $data->files = $requestdata->files;
+
+        $msg = $this->getResponse($data);
+        $msg = json_encode($msg);
+
+        $clients = SocketSessions::getClientsById($this->from->resourceId);
+        foreach ($clients as $client) {
+            if (SocketSessions::getSSById($client->resourceId)->groupid == $requestdata->groupid) {
+                // Send to each client connected into same group, including the sender.
+                $client->send($msg);
+            }
+        }
+
+        Logging::trace(Logging::LVL_DETAIL, 'Technology completed: ' . $requestdata->id);
+
+        $params = array();
+        $params['groupid'] = $requestdata->groupid;
+        $params['lang'] = $requestdata->name;
+        $this->notifyActionToAll('actionendtechnology', false, $params);
+
+        return true;
+    }
+
+    FALTAN 'sc_healthupdate', 'sc_gameover'
+
 
     // Internal methods.
     private function getChatUser() {
@@ -763,6 +862,26 @@ class Action {
         return $chatuser;
     }
 
+    private function getChatUserByGroupid($groupid) {
+        global $DB;
+
+        $params = array('groupid' => $groupid,  'cmid' => $this->session->cmid);
+        if (!$socketsess = $DB->get_record('local_tepuy_socket_sessions', $params)) {
+            Messages::error('chatnotavailable', null, $this->from);
+        }
+
+        if (!$socketchat = $DB->get_record('local_tepuy_socket_chat', array('sid' => $socketsess->id))) {
+            Messages::error('chatnotavailable', null, $this->from);
+        }
+
+        $chatuser = $DB->get_record('chat_users', array('sid' => $socketchat->chatsid));
+        if ($chatuser === false) {
+            Messages::error('userchatnotfound', null, $this->from);
+        }
+
+        return $chatuser;
+    }
+
     public static function customUnset($conn) {
         unset(self::$chats[$conn->resourceId]);
     }
@@ -776,7 +895,7 @@ class Action {
         return $msg;
     }
 
-    private function notifyActionToAll($msg = null, $tosender = false) {
+    private function notifyActionToAll($msg = null, $tosender = false, $params = null) {
 
         try {
             $data = new \stdClass();
@@ -791,7 +910,7 @@ class Action {
             }
 
             $action = new Action($this->from, $data);
-            $action->run();
+            $action->run($params);
 
             Logging::trace(Logging::LVL_DETAIL, 'Chat system message: ' . $data->data);
 

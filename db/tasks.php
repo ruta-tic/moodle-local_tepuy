@@ -28,7 +28,7 @@ $tasks = array(
     array(
         'classname' => 'local_tepuy\task\cron_tepuy',
         'blocking' => 0,
-        'minute' => '*/5',
+        'minute' => '*/1',
         'hour' => '*',
         'day' => '*',
         'month' => '*',

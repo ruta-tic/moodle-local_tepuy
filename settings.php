@@ -30,7 +30,7 @@ if ($hassiteconfig) {
     $name = 'components_socket_cronuri';
     $title = get_string($name, 'local_tepuy');
     $description = get_string($name.'_desc', 'local_tepuy');
-    $setting = new admin_setting_configtext('local_tepuy/'.$name, $title, $description, 'ws://localhost:1234/skey=');
+    $setting = new admin_setting_configtextarea('local_tepuy/' . $name, $title, $description, 'ws://localhost:1234/skey=');
     $settings->add($setting);
 
     $ADMIN->add('localplugins', $settings);

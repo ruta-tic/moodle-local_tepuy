@@ -81,3 +81,5 @@ $string['messageactionsc_stoptechnology'] = '{$a} has stoped a technology';
 $string['messageactionsc_actioncompleted'] = 'An action was completed';
 $string['messageactionsc_technologycompleted'] = 'An technology was completed';
 $string['messageactionsc_gameover'] = 'Gameover';
+$string['messageactionendtechnology'] = 'Technology -{$a}- has finished';
+$string['messageactionendaction'] = 'Action -{$a}- has finished';

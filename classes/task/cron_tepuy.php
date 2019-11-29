@@ -48,10 +48,20 @@ class cron_tepuy extends \core\task\scheduled_task {
         mtrace('Sending execron action...');
 
         $config = get_config('local_tepuy');
-        $client = new \WebSocket\Client($config->components_socket_cronuri);
-        $client->send('{"action": "execron" }');
 
-        mtrace('Response: ' . $client->receive());
+        $uris = explode("\n", $config->components_socket_cronuri);
+
+        foreach ($uris as $uri) {
+            $to = strpos($uri, '?');
+            $to = $to === false ? strlen($uri) : $to;
+            $publicuri = substr($uri, 0, $to);
+            mtrace('Calling URI: ' . $publicuri);
+
+            $client = new \WebSocket\Client($uri);
+            $client->send('{"action": "execron" }');
+
+            mtrace('Response: ' . $client->receive());
+        }
     }
 
 }
