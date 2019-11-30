@@ -6,70 +6,31 @@
             "endmode": "manual",
             "endtime": 22,
             "newresources": 0,
-            "zones": [0, 0, 10, 0, -2, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 5
-                },
-                {
-                    "type": "physical",
-                    "value": 20
-                },
-                {
-                    "type": "energy",
-                    "value": 10
-                }
-            ],
+            "zones": [0, 0, 8, 2, -2, 0],
+            "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 20 }, { "type": "energy", "value": 10 } ],
             "technologies": [],
             "files": []
         },
         {
             "id": "a2",
             "name": "Educación ambiental",
-            "endmode": "manual",
+            "endmode": "auto",
             "endtime": 2,
             "newresources": 0,
             "zones": [1, 1, 0, 2, 1, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 10
-                },
-                {
-                    "type": "physical",
-                    "value": 5
-                },
-                {
-                    "type": "energy",
-                    "value": 5
-                }
-            ],
+            "resources": [ { "type": "human", "value": 10 }, { "type": "physical", "value": 5 }, { "type": "energy", "value": 5 } ],
             "technologies": [],
             "files": []
         },
         {
             "id": "a3",
-            "name": "",
+            "name": "Educación ambiental virtual",
             "endmode": "manual",
             "endtime": 20,
             "newresources": 0,
             "zones": [1, 2, 0, 2, 1, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 10
-                },
-                {
-                    "type": "physical",
-                    "value": 2
-                },
-                {
-                    "type": "energy",
-                    "value": 10
-                }
-            ],
-            "technologies": ["E-Learning", "Redes sociales"],
+            "resources": [ { "type": "human", "value": 10 }, { "type": "physical", "value": 2 }, { "type": "energy", "value": 10 } ],
+            "technologies": ["t24"],
             "files": []
         },
         {
@@ -79,44 +40,18 @@
             "endtime": 4,
             "newresources": 0,
             "zones": [0, 5, 1, 0, 0, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 5
-                },
-                {
-                    "type": "physical",
-                    "value": 2
-                },
-                {
-                    "type": "energy",
-                    "value": 5
-                }
-            ],
+            "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 2 }, { "type": "energy", "value": 5 } ],
             "technologies": [],
             "files": []
         },
         {
             "id": "a5",
-            "name": "",
+            "name": "Implementación de bibliotecas digitales",
             "endmode": "auto",
             "endtime": 4,
             "newresources": 0,
             "zones": [0, 5, 2, 0, 0, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 4
-                },
-                {
-                    "type": "physical",
-                    "value": 2
-                },
-                {
-                    "type": "energy",
-                    "value": 5
-                }
-            ],
+            "resources": [ { "type": "human", "value": 4 }, { "type": "physical", "value": 2 }, { "type": "energy", "value": 5 } ],
             "technologies": ["t4"],
             "files": []
         },
@@ -127,21 +62,8 @@
             "endtime": 15,
             "newresources": 0,
             "zones": [0, 0, 4, 1, 0, 1],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 5
-                },
-                {
-                    "type": "physical",
-                    "value": 10
-                },
-                {
-                    "type": "energy",
-                    "value": 10
-                }
-            ],
-            "technologies": ["Interconnect"],
+            "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 10 }, { "type": "energy", "value": 10 } ],
+            "technologies": ["t21"],
             "files": []
         },
         {
@@ -151,21 +73,8 @@
             "endtime": 12,
             "newresources": 0,
             "zones": [0, 3, 0, 0, 0, 2],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 15
-                },
-                {
-                    "type": "physical",
-                    "value": 5
-                },
-                {
-                    "type": "energy",
-                    "value": 5
-                }
-            ],
-            "technologies": ["E-Learning"],
+            "resources": [ { "type": "human", "value": 15 }, { "type": "physical", "value": 5 }, { "type": "energy", "value": 5 } ],
+            "technologies": ["t24"],
             "files": []
         },
         {
@@ -175,45 +84,19 @@
             "endtime": 15,
             "newresources": 0,
             "zones": [0, 6, 0, 0, 2, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 20
-                },
-                {
-                    "type": "physical",
-                    "value": 15
-                },
-                {
-                    "type": "energy",
-                    "value": 12
-                }
-            ],
+            "resources": [ { "type": "human", "value": 20 }, { "type": "physical", "value": 15 }, { "type": "energy", "value": 12 } ],
             "technologies": [],
             "files": []
         },
         {
             "id": "a9",
-            "name": "",
+            "name": "Aulas inteligentes con contenido en línea",
             "endmode": "manual",
             "endtime": 15,
             "newresources": 0,
             "zones": [0, 6, 0, 0, 2, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 10
-                },
-                {
-                    "type": "physical",
-                    "value": 12
-                },
-                {
-                    "type": "energy",
-                    "value": 12
-                }
-            ],
-            "technologies": ["Contenidos por Streaming"],
+            "resources": [ { "type": "human", "value": 10 }, { "type": "physical", "value": 12 }, { "type": "energy", "value": 12 } ],
+            "technologies": ["t5"],
             "files": []
         },
         {
@@ -223,44 +106,18 @@
             "endtime": 15,
             "newresources": 0,
             "zones": [0, 3, 0, 0, 1, 1],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 9
-                },
-                {
-                    "type": "physical",
-                    "value": 8
-                },
-                {
-                    "type": "energy",
-                    "value": 6
-                }
-            ],
-            "technologies": ["Password Secure", "Paralely"],
+            "resources": [ { "type": "human", "value": 9 }, { "type": "physical", "value": 8 }, { "type": "energy", "value": 6 } ],
+            "technologies": ["t22", "t23"],
             "files": []
         },
         {
             "id": "a11",
-            "name": "Capacitar en uso de herramienta de almacenamiento de datos en la nube",
+            "name": "Capacitar en uso de herramienta de almacenamiento de datos en la nube ",
             "endmode": "auto",
             "endtime": 2,
             "newresources": 0,
             "zones": [0, 1, 0, 0, 2, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 5
-                },
-                {
-                    "type": "physical",
-                    "value": 5
-                },
-                {
-                    "type": "energy",
-                    "value": 3
-                }
-            ],
+            "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 5 }, { "type": "energy", "value": 3 } ],
             "technologies": [],
             "files": []
         },
@@ -271,20 +128,7 @@
             "endtime": 2,
             "newresources": 0,
             "zones": [0, 0, 0, 2, 0, 2],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 8
-                },
-                {
-                    "type": "physical",
-                    "value": 5
-                },
-                {
-                    "type": "energy",
-                    "value": 4
-                }
-            ],
+            "resources": [ { "type": "human", "value": 8 }, { "type": "physical", "value": 5 }, { "type": "energy", "value": 4 } ],
             "technologies": [],
             "files": []
         },
@@ -295,23 +139,9 @@
             "endtime": 2,
             "newresources": 0,
             "zones": [0, 0, 4, 3, 1, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 13
-                },
-                {
-                    "type": "physical",
-                    "value": 8
-                },
-                {
-                    "type": "energy",
-                    "value": 5
-                }
-            ],
-            "technologies": ["Localízate y Optitravel"],
-            "files": ["Plan de rutas"]
-        },
+            "resources": [ { "type": "human", "value": 13 }, { "type": "physical", "value": 8 }, { "type": "energy", "value": 5 } ],
+            "technologies": ["t3"],
+            "files": ["f2"] },
         {
             "id": "a14",
             "name": "Ciclorutas",
@@ -319,20 +149,7 @@
             "endtime": 5,
             "newresources": 0,
             "zones": [3, 0, 5, 6, 5, -2],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 10
-                },
-                {
-                    "type": "physical",
-                    "value": 10
-                },
-                {
-                    "type": "energy",
-                    "value": 8
-                }
-            ],
+            "resources": [ { "type": "human", "value": 10 }, { "type": "physical", "value": 10 }, { "type": "energy", "value": 8 } ],
             "technologies": [],
             "files": []
         },
@@ -343,20 +160,7 @@
             "endtime": 10,
             "newresources": 1,
             "zones": [2, 0, -3, 5, 2, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 10
-                },
-                {
-                    "type": "physical",
-                    "value": 15
-                },
-                {
-                    "type": "energy",
-                    "value": 12
-                }
-            ],
+            "resources": [ { "type": "human", "value": 10 }, { "type": "physical", "value": 15 }, { "type": "energy", "value": 12 } ],
             "technologies": [],
             "files": []
         },
@@ -367,20 +171,7 @@
             "endtime": 7,
             "newresources": 0,
             "zones": [0, 0, 3, -2, 0, 4],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 10
-                },
-                {
-                    "type": "physical",
-                    "value": 15
-                },
-                {
-                    "type": "energy",
-                    "value": 12
-                }
-            ],
+            "resources": [ { "type": "human", "value": 10 }, { "type": "physical", "value": 15 }, { "type": "energy", "value": 12 } ],
             "technologies": [],
             "files": []
         },
@@ -391,20 +182,7 @@
             "endtime": 28,
             "newresources": 1,
             "zones": [10, 0, 0, 5, 0, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 15
-                },
-                {
-                    "type": "physical",
-                    "value": 20
-                },
-                {
-                    "type": "energy",
-                    "value": 20
-                }
-            ],
+            "resources": [ { "type": "human", "value": 15 }, { "type": "physical", "value": 20 }, { "type": "energy", "value": 20 } ],
             "technologies": [],
             "files": []
         },
@@ -415,20 +193,7 @@
             "endtime": 6,
             "newresources": 0,
             "zones": [3, 0, 5, 8, -1, 3],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 10
-                },
-                {
-                    "type": "physical",
-                    "value": 10
-                },
-                {
-                    "type": "energy",
-                    "value": 5
-                }
-            ],
+            "resources": [ { "type": "human", "value": 10 }, { "type": "physical", "value": 10 }, { "type": "energy", "value": 5 } ],
             "technologies": [],
             "files": []
         },
@@ -439,20 +204,7 @@
             "endtime": 10,
             "newresources": 0,
             "zones": [0, 0, 0, 5, 0, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 10
-                },
-                {
-                    "type": "physical",
-                    "value": 12
-                },
-                {
-                    "type": "energy",
-                    "value": 10
-                }
-            ],
+            "resources": [ { "type": "human", "value": 10 }, { "type": "physical", "value": 12 }, { "type": "energy", "value": 10 } ],
             "technologies": [],
             "files": []
         },
@@ -463,21 +215,8 @@
             "endtime": 2,
             "newresources": 0,
             "zones": [0, 0, 0, 0, 5, 1],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 10
-                },
-                {
-                    "type": "physical",
-                    "value": 5
-                },
-                {
-                    "type": "energy",
-                    "value": 5
-                }
-            ],
-            "technologies": ["Computación en la nube"],
+            "resources": [ { "type": "human", "value": 10 }, { "type": "physical", "value": 5 }, { "type": "energy", "value": 5 } ],
+            "technologies": ["t1"],
             "files": []
         },
         {
@@ -487,23 +226,9 @@
             "endtime": 2,
             "newresources": 0,
             "zones": [0, 0, 1, 5, 0, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 10
-                },
-                {
-                    "type": "physical",
-                    "value": 5
-                },
-                {
-                    "type": "energy",
-                    "value": 3
-                }
-            ],
-            "technologies": ["SICOA"],
-            "files": ["Informe ambiental"]
-        },
+            "resources": [ { "type": "human", "value": 10 }, { "type": "physical", "value": 5 }, { "type": "energy", "value": 3 } ],
+            "technologies": [],
+            "files": ["f3"] },
         {
             "id": "a22",
             "name": "Control inteligente de servicios públicos",
@@ -511,20 +236,7 @@
             "endtime": 8,
             "newresources": 0,
             "zones": [0, 0, 3, 3, 0, -2],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 10
-                },
-                {
-                    "type": "physical",
-                    "value": 7
-                },
-                {
-                    "type": "energy",
-                    "value": 10
-                }
-            ],
+            "resources": [ { "type": "human", "value": 10 }, { "type": "physical", "value": 7 }, { "type": "energy", "value": 10 } ],
             "technologies": [],
             "files": []
         },
@@ -535,20 +247,7 @@
             "endtime": 3,
             "newresources": 0,
             "zones": [0, 0, 5, 0, 0, 2],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 5
-                },
-                {
-                    "type": "physical",
-                    "value": 7
-                },
-                {
-                    "type": "energy",
-                    "value": 8
-                }
-            ],
+            "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 7 }, { "type": "energy", "value": 8 } ],
             "technologies": [],
             "files": []
         },
@@ -559,20 +258,7 @@
             "endtime": 13,
             "newresources": 0,
             "zones": [0, 0, 0, 0, 1, 5],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 10
-                },
-                {
-                    "type": "physical",
-                    "value": 12
-                },
-                {
-                    "type": "energy",
-                    "value": 12
-                }
-            ],
+            "resources": [ { "type": "human", "value": 10 }, { "type": "physical", "value": 12 }, { "type": "energy", "value": 12 } ],
             "technologies": [],
             "files": []
         },
@@ -583,20 +269,7 @@
             "endtime": 14,
             "newresources": 1,
             "zones": [0, 0, 1, 4, 0, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 10
-                },
-                {
-                    "type": "physical",
-                    "value": 10
-                },
-                {
-                    "type": "energy",
-                    "value": 8
-                }
-            ],
+            "resources": [ { "type": "human", "value": 10 }, { "type": "physical", "value": 10 }, { "type": "energy", "value": 8 } ],
             "technologies": [],
             "files": []
         },
@@ -607,20 +280,7 @@
             "endtime": 16,
             "newresources": 0,
             "zones": [0, 0, 0, 0, 2, 4],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 10
-                },
-                {
-                    "type": "physical",
-                    "value": 10
-                },
-                {
-                    "type": "energy",
-                    "value": 12
-                }
-            ],
+            "resources": [ { "type": "human", "value": 10 }, { "type": "physical", "value": 10 }, { "type": "energy", "value": 12 } ],
             "technologies": [],
             "files": []
         },
@@ -631,20 +291,7 @@
             "endtime": 20,
             "newresources": 0,
             "zones": [3, 5, 0, -5, 3, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 8
-                },
-                {
-                    "type": "physical",
-                    "value": 8
-                },
-                {
-                    "type": "energy",
-                    "value": 12
-                }
-            ],
+            "resources": [ { "type": "human", "value": 8 }, { "type": "physical", "value": 8 }, { "type": "energy", "value": 12 } ],
             "technologies": [],
             "files": []
         },
@@ -655,20 +302,7 @@
             "endtime": 8,
             "newresources": 0,
             "zones": [5, 0, 0, 0, 0, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 10
-                },
-                {
-                    "type": "physical",
-                    "value": 12
-                },
-                {
-                    "type": "energy",
-                    "value": 10
-                }
-            ],
+            "resources": [ { "type": "human", "value": 10 }, { "type": "physical", "value": 12 }, { "type": "energy", "value": 10 } ],
             "technologies": [],
             "files": []
         },
@@ -679,23 +313,9 @@
             "endtime": 8,
             "newresources": 0,
             "zones": [0, 0, 2, 0, 0, 2],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 5
-                },
-                {
-                    "type": "physical",
-                    "value": 10
-                },
-                {
-                    "type": "energy",
-                    "value": 7
-                }
-            ],
-            "technologies": ["Tu solución"],
-            "files": ["Resultados de búsqueda"]
-        },
+            "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 10 }, { "type": "energy", "value": 7 } ],
+            "technologies": ["t7"],
+            "files": ["f4"] },
         {
             "id": "a30",
             "name": "Adoptar aplicación para transporte público local",
@@ -703,167 +323,70 @@
             "endtime": 2,
             "newresources": 0,
             "zones": [0, 0, 0, 0, 0, 3],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 5
-                },
-                {
-                    "type": "physical",
-                    "value": 3
-                },
-                {
-                    "type": "energy",
-                    "value": 2
-                }
-            ],
-            "technologies": ["Aplicación transporte público - Urbatrans"],
+            "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 3 }, { "type": "energy", "value": 2 } ],
+            "technologies": ["t8"],
             "files": []
         },
         {
             "id": "a31",
-            "name": "Utilizar indicadores de gobierno en línea",
+            "name": "Inversión en políticas de gobierno",
             "endmode": "auto",
             "endtime": 2,
             "newresources": 0,
             "zones": [0, 0, 0, 0, 5, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 5
-                },
-                {
-                    "type": "physical",
-                    "value": 5
-                },
-                {
-                    "type": "energy",
-                    "value": 6
-                }
-            ],
-            "technologies": ["Indicadores de gobierno"],
-            "files": []
-        },
+            "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 5 }, { "type": "energy", "value": 6 } ],
+            "technologies": ["t9"],
+            "files": ["f5"] },
         {
             "id": "a32",
-            "name": "Medir el nivel de educación de la población",
+            "name": "Inversión en los aspectos más influyentes para aumentar la calidad educativa",
             "endmode": "auto",
             "endtime": 2,
             "newresources": 0,
             "zones": [0, 5, 0, 0, 0, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 5
-                },
-                {
-                    "type": "physical",
-                    "value": 5
-                },
-                {
-                    "type": "energy",
-                    "value": 6
-                }
-            ],
-            "technologies": ["Indicadores de educación"],
-            "files": []
-        },
+            "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 5 }, { "type": "energy", "value": 6 } ],
+            "technologies": ["t10"],
+            "files": ["f6"] },
         {
             "id": "a33",
-            "name": "Identificar el nivel de salud de la población",
+            "name": "Adopción de medidas preventivas para disminuir los factores de riesgo en la salud de la población",
             "endmode": "auto",
             "endtime": 2,
             "newresources": 0,
             "zones": [5, 0, 0, 0, 0, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 5
-                },
-                {
-                    "type": "physical",
-                    "value": 5
-                },
-                {
-                    "type": "energy",
-                    "value": 6
-                }
-            ],
-            "technologies": ["Indicadores de Salud"],
-            "files": []
-        },
+            "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 5 }, { "type": "energy", "value": 6 } ],
+            "technologies": ["t11"],
+            "files": ["f7"] },
         {
             "id": "a34",
-            "name": "Conocer el nivel de seguridad percibido por la población",
+            "name": "Adopción de sistemas modernos de seguridad que aumente la confianza de la población",
             "endmode": "auto",
             "endtime": 2,
             "newresources": 0,
             "zones": [0, 0, 0, 0, 0, 5],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 5
-                },
-                {
-                    "type": "physical",
-                    "value": 5
-                },
-                {
-                    "type": "energy",
-                    "value": 6
-                }
-            ],
-            "technologies": ["Indicadores de Seguridad"],
-            "files": []
-        },
+            "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 5 }, { "type": "energy", "value": 6 } ],
+            "technologies": ["t12"],
+            "files": ["f8"] },
         {
             "id": "a35",
-            "name": "Medir el desarrollo urbanístico de la ciudad",
+            "name": "Participación en eventos urbanísticos de ciudades modernas",
             "endmode": "auto",
             "endtime": 2,
             "newresources": 0,
             "zones": [0, 0, 5, 0, 0, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 5
-                },
-                {
-                    "type": "physical",
-                    "value": 5
-                },
-                {
-                    "type": "energy",
-                    "value": 6
-                }
-            ],
-            "technologies": ["Indicadores de Urbanismo"],
-            "files": []
-        },
+            "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 5 }, { "type": "energy", "value": 6 } ],
+            "technologies": ["t13"],
+            "files": ["f9"] },
         {
             "id": "a36",
-            "name": "Conocer el índice ambiental de la ciudad",
+            "name": "Mejoramiento de las condiciones ambientales para la implemetación de un ecosistema sostenible",
             "endmode": "auto",
             "endtime": 2,
             "newresources": 0,
             "zones": [0, 0, 0, 5, 0, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 5
-                },
-                {
-                    "type": "physical",
-                    "value": 5
-                },
-                {
-                    "type": "energy",
-                    "value": 6
-                }
-            ],
-            "technologies": ["Indicadores de Medio Ambiente"],
-            "files": []
-        },
+            "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 5 }, { "type": "energy", "value": 6 } ],
+            "technologies": ["t14"],
+            "files": ["f10"] },
         {
             "id": "a37",
             "name": "Implementar sistema de simulación para clases de conducción",
@@ -871,21 +394,8 @@
             "endtime": 15,
             "newresources": 0,
             "zones": [0, 9, -3, 0, 0, 2],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 5
-                },
-                {
-                    "type": "physical",
-                    "value": 14
-                },
-                {
-                    "type": "energy",
-                    "value": 15
-                }
-            ],
-            "technologies": ["Conductor experto"],
+            "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 14 }, { "type": "energy", "value": 15 } ],
+            "technologies": ["t15"],
             "files": []
         },
         {
@@ -895,21 +405,8 @@
             "endtime": 2,
             "newresources": 0,
             "zones": [0, 0, 0, 0, 5, 5],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 10
-                },
-                {
-                    "type": "physical",
-                    "value": 15
-                },
-                {
-                    "type": "energy",
-                    "value": 5
-                }
-            ],
-            "technologies": ["Blockchain"],
+            "resources": [ { "type": "human", "value": 10 }, { "type": "physical", "value": 15 }, { "type": "energy", "value": 5 } ],
+            "technologies": ["t16"],
             "files": []
         },
         {
@@ -919,21 +416,8 @@
             "endtime": 2,
             "newresources": 0,
             "zones": [0, 0, 3, 0, 0, 3],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 5
-                },
-                {
-                    "type": "physical",
-                    "value": 8
-                },
-                {
-                    "type": "energy",
-                    "value": 5
-                }
-            ],
-            "technologies": ["PrevenGlobal", "SmartPrevention"],
+            "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 8 }, { "type": "energy", "value": 5 } ],
+            "technologies": ["t17", "t1" ],
             "files": []
         },
         {
@@ -943,21 +427,8 @@
             "endtime": 2,
             "newresources": 0,
             "zones": [3, 0, -2, 0, 2, 8],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 10
-                },
-                {
-                    "type": "physical",
-                    "value": 15
-                },
-                {
-                    "type": "energy",
-                    "value": 10
-                }
-            ],
-            "technologies": ["Computación cuántica", "Computación en la nube"],
+            "resources": [ { "type": "human", "value": 10 }, { "type": "physical", "value": 15 }, { "type": "energy", "value": 10 } ],
+            "technologies": ["t19", "t20"],
             "files": []
         },
         {
@@ -967,20 +438,7 @@
             "endtime": 10,
             "newresources": 0,
             "zones": [1, 0, 0, 3, 0, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 10
-                },
-                {
-                    "type": "physical",
-                    "value": 10
-                },
-                {
-                    "type": "energy",
-                    "value": 5
-                }
-            ],
+            "resources": [ { "type": "human", "value": 10 }, { "type": "physical", "value": 10 }, { "type": "energy", "value": 5 } ],
             "technologies": [],
             "files": []
         },
@@ -991,20 +449,7 @@
             "endtime": 2,
             "newresources": 0,
             "zones": [1, 0, 0, 0, 0, 3],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 6
-                },
-                {
-                    "type": "physical",
-                    "value": 6
-                },
-                {
-                    "type": "energy",
-                    "value": 4
-                }
-            ],
+            "resources": [ { "type": "human", "value": 6 }, { "type": "physical", "value": 6 }, { "type": "energy", "value": 4 } ],
             "technologies": [],
             "files": []
         },
@@ -1015,23 +460,9 @@
             "endtime": 14,
             "newresources": 0,
             "zones": [2, 0, 0, 0, 5, 1],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 12
-                },
-                {
-                    "type": "physical",
-                    "value": 12
-                },
-                {
-                    "type": "energy",
-                    "value": 10
-                }
-            ],
+            "resources": [ { "type": "human", "value": 12 }, { "type": "physical", "value": 12 }, { "type": "energy", "value": 10 } ],
             "technologies": [],
-            "files": ["Base de datos de empleos y empleados disponibles"]
-        },
+            "files": ["f11"] },
         {
             "id": "a44",
             "name": "Apoyar huertos urbanos",
@@ -1039,20 +470,7 @@
             "endtime": 3,
             "newresources": 1,
             "zones": [0, 0, 3, 4, 0, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 8
-                },
-                {
-                    "type": "physical",
-                    "value": 8
-                },
-                {
-                    "type": "energy",
-                    "value": 3
-                }
-            ],
+            "resources": [ { "type": "human", "value": 8 }, { "type": "physical", "value": 8 }, { "type": "energy", "value": 3 } ],
             "technologies": [],
             "files": []
         },
@@ -1063,20 +481,7 @@
             "endtime": 3,
             "newresources": 0,
             "zones": [5, 0, 0, 0, 0, 0],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 5
-                },
-                {
-                    "type": "physical",
-                    "value": 7
-                },
-                {
-                    "type": "energy",
-                    "value": 2
-                }
-            ],
+            "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 7 }, { "type": "energy", "value": 2 } ],
             "technologies": [],
             "files": []
         },
@@ -1087,29 +492,16 @@
             "endtime": 3,
             "newresources": 0,
             "zones": [0, 0, 0, 3, 0, 3],
-            "resources": [
-                {
-                    "type": "human",
-                    "value": 80
-                },
-                {
-                    "type": "physical",
-                    "value": 5
-                },
-                {
-                    "type": "energy",
-                    "value": 2
-                }
-            ],
+            "resources": [ { "type": "human", "value": 10 }, { "type": "physical", "value": 5 }, { "type": "energy", "value": 2 } ],
             "technologies": [],
-            "files": []
-        }
+            "files": [] }
     ],
     "technologies": [
         {
-            "id": "",
-            "name": "Tecnología",
-            "endmode": "Finalización",
+            "id": "t1",
+            "name": "Computación en la nube",
+            "endmode": "manual",
+            "endtime": "0",
             "resources": [
                 { "type": "capacity", "value": 15 }
             ],
@@ -1119,9 +511,10 @@
             }
         },
         {
-            "id": "t1",
-            "name": "Computación en la nube",
-            "endmode": "manual",
+            "id": "t2",
+            "name": "Localízate: Sistema GPS",
+            "endmode": "auto",
+            "endtime": "1",
             "resources": [
                 { "type": "capacity", "value": 10 }
             ],
@@ -1131,35 +524,25 @@
             }
         },
         {
-            "id": "t2",
-            "name": "Sistema GPS",
-            "endmode": "manual",
+            "id": "t3",
+            "name": "Optitravel: Optimizador de rutas de viaje",
+            "endmode": "auto",
+            "endtime": "1",
             "resources": [
-                { "type": "capacity", "value": 3 }
+                { "type": "capacity", "value": 5 }
             ],
             "files": {
                 "in": ["f1"],
-                "out": ["Plan de rutas"]
-            }
-        },
-        {
-            "id": "t3",
-            "name": "Optimizador de rutas de viaje",
-            "endmode": "auto",
-            "resources": [
-                { "type": "capacity", "value": 15 }
-            ],
-            "files": {
-                "in": [],
-                "out": []
+                "out": ["f2"]
             }
         },
         {
             "id": "t4",
             "name": "Big Data",
             "endmode": "manual",
+            "endtime": "0",
             "resources": [
-                { "type": "capacity", "value": 10 }
+                { "type": "capacity", "value": 15 }
             ],
             "files": {
                 "in": [],
@@ -1170,32 +553,9 @@
             "id": "t5",
             "name": "Contenidos por Streaming",
             "endmode": "manual",
-            "resources": [
-                { "type": "capacity", "value": 3 }
-            ],
-            "files": {
-                "in": [],
-                "out": ["Informe ambiental"]
-            }
-        },
-        {
-            "id": "t6",
-            "name": "Sistema de control ambiental",
-            "endmode": "auto",
+            "endtime": "0",
             "resources": [
                 { "type": "capacity", "value": 10 }
-            ],
-            "files": {
-                "in": [],
-                "out": ["Resultados de búsqueda"]
-            }
-        },
-        {
-            "id": "t7",
-            "name": "Asistente virtual",
-            "endmode": "auto",
-            "resources": [
-                { "type": "capacity", "value": 3 }
             ],
             "files": {
                 "in": [],
@@ -1203,81 +563,36 @@
             }
         },
         {
+            "id": "t6",
+            "name": "SICOA: Sistema de control ambiental",
+            "endmode": "auto",
+            "endtime": "1",
+            "resources": [
+                { "type": "capacity", "value": 5 }
+            ],
+            "files": {
+                "in": [],
+                "out": ["f3"]
+            }
+        },
+        {
+            "id": "t7",
+            "name": "Tu solución: Asistente virtual",
+            "endmode": "auto",
+            "endtime": "2",
+            "resources": [
+                { "type": "capacity", "value": 10 }
+            ],
+            "files": {
+                "in": [],
+                "out": ["f4"]
+            }
+        },
+        {
             "id": "t8",
-            "name": "Aplicación transporte público - Urbatrans",
-            "endmode": "auto",
-            "resources": [
-                { "type": "capacity", "value": 3 }
-            ],
-            "files": {
-                "in": [],
-                "out": ["Indicadores de gobierno"]
-            }
-        },
-        {
-            "id": "t9",
-            "name": "Plataforma de informe en línea de indicadores de gobierno",
-            "endmode": "auto",
-            "resources": [
-                { "type": "capacity", "value": 3 }
-            ],
-            "files": {
-                "in": [],
-                "out": ["Indicadores de educación"]
-            }
-        },
-        {
-            "id": "t10",
-            "name": "Análisis de datos de pruebas educativas",
-            "endmode": "auto",
-            "resources": [
-                { "type": "capacity", "value": 3 }
-            ],
-            "files": {
-                "in": [],
-                "out": ["Indicadores de Salud"]
-            }
-        },
-        {
-            "id": "t11",
-            "name": "Diagnóstico de estados de salud de la población",
-            "endmode": "auto",
-            "resources": [
-                { "type": "capacity", "value": 3 }
-            ],
-            "files": {
-                "in": [],
-                "out": ["Indicadores de Seguridad"]
-            }
-        },
-        {
-            "id": "t12",
-            "name": "Análisis de datos de percepción de la seguridad poblacional",
-            "endmode": "auto",
-            "resources": [
-                { "type": "capacity", "value": 3 }
-            ],
-            "files": {
-                "in": [],
-                "out": ["Indicadores de Urbanismo"]
-            }
-        },
-        {
-            "id": "t13",
-            "name": "Modelos de análisis de desarrollo urbanístico",
-            "endmode": "auto",
-            "resources": [
-                { "type": "capacity", "value": 3 }
-            ],
-            "files": {
-                "in": [],
-                "out": ["Indicadores de Medio Ambiente"]
-            }
-        },
-        {
-            "id": "t14",
-            "name": "Medición de magnitudes relevantes para el medio ambiente",
-            "endmode": "auto",
+            "name": "Urbatrans: Aplicación transporte público",
+            "endmode": "manual",
+            "endtime": "0",
             "resources": [
                 { "type": "capacity", "value": 5 }
             ],
@@ -1287,11 +602,90 @@
             }
         },
         {
-            "id": "t15",
-            "name": "Simulador de conducción",
-            "endmode": "manual",
+            "id": "t9",
+            "name": "Plataforma de informe en línea de indicadores de gobierno",
+            "endmode": "auto",
+            "endtime": "1",
             "resources": [
-                { "type": "capacity", "value": 8 }
+                { "type": "capacity", "value": 5 }
+            ],
+            "files": {
+                "in": [],
+                "out": ["f5"]
+            }
+        },
+        {
+            "id": "t10",
+            "name": "Análisis de datos de pruebas educativas",
+            "endmode": "auto",
+            "endtime": "1",
+            "resources": [
+                { "type": "capacity", "value": 5 }
+            ],
+            "files": {
+                "in": [],
+                "out": ["f6"]
+            }
+        },
+        {
+            "id": "t11",
+            "name": "Diagnóstico de estados de salud de la población",
+            "endmode": "auto",
+            "endtime": "1",
+            "resources": [
+                { "type": "capacity", "value": 5 }
+            ],
+            "files": {
+                "in": [],
+                "out": ["f7"]
+            }
+        },
+        {
+            "id": "t12",
+            "name": "Análisis de datos de percepción de la seguridad poblacional",
+            "endmode": "auto",
+            "endtime": "1",
+            "resources": [
+                { "type": "capacity", "value": 5 }
+            ],
+            "files": {
+                "in": [],
+                "out": ["f8"]
+            }
+        },
+        {
+            "id": "t13",
+            "name": "Modelos de análisis de desarrollo urbanístico",
+            "endmode": "auto",
+            "endtime": "1",
+            "resources": [
+                { "type": "capacity", "value": 5 }
+            ],
+            "files": {
+                "in": [],
+                "out": ["f9"]
+            }
+        },
+        {
+            "id": "t14",
+            "name": "Medición de magnitudes relevantes para el medio ambiente",
+            "endmode": "auto",
+            "endtime": "1",
+            "resources": [
+                { "type": "capacity", "value": 5 }
+            ],
+            "files": {
+                "in": [],
+                "out": ["f10"]
+            }
+        },
+        {
+            "id": "t15",
+            "name": "Conductor experto: Simulador de conducción",
+            "endmode": "manual",
+            "endtime": "0",
+            "resources": [
+                { "type": "capacity", "value": 7 }
             ],
             "files": {
                 "in": [],
@@ -1302,8 +696,9 @@
             "id": "t16",
             "name": "Blockchain",
             "endmode": "manual",
+            "endtime": "0",
             "resources": [
-                { "type": "capacity", "value": 15 }
+                { "type": "capacity", "value": 8 }
             ],
             "files": {
                 "in": [],
@@ -1314,20 +709,9 @@
             "id": "t17",
             "name": "Computación cuántica",
             "endmode": "manual",
+            "endtime": "0",
             "resources": [
                 { "type": "capacity", "value": 15 }
-            ],
-            "files": {
-                "in": [],
-                "out": ["Base de datos de empleos y empleados disponibles"]
-            }
-        },
-        {
-            "id": "t18",
-            "name": "Análisis de base de datos",
-            "endmode": "manual",
-            "resources": [
-                { "type": "capacity", "value": 5 }
             ],
             "files": {
                 "in": [],
@@ -1335,11 +719,25 @@
             }
         },
         {
-            "id": "t19",
-            "name": "Sistema de prevención de desastres",
-            "endmode": "manual",
+            "id": "t18",
+            "name": "Análisis de base de datos",
+            "endmode": "auto",
+            "endtime": "2",
             "resources": [
-                { "type": "capacity", "value": 5 }
+                { "type": "capacity", "value": 15 }
+            ],
+            "files": {
+                "in": [],
+                "out": ["f11"]
+            }
+        },
+        {
+            "id": "t19",
+            "name": "PrevenGlobal: Sistema de prevención de desastres",
+            "endmode": "manual",
+            "endtime": "0",
+            "resources": [
+                { "type": "capacity", "value": 8 }
             ],
             "files": {
                 "in": [],
@@ -1348,10 +746,11 @@
         },
         {
             "id": "t20",
-            "name": "",
+            "name": "SmartPrevention: Sistema de prevención de desastres",
             "endmode": "manual",
+            "endtime": "0",
             "resources": [
-                { "type": "capacity", "value": 5 }
+                { "type": "capacity", "value": 8 }
             ],
             "files": {
                 "in": [],
@@ -1360,10 +759,11 @@
         },
         {
             "id": "t21",
-            "name": "Empowered edge",
+            "name": "Interconnect: Empowered edge",
             "endmode": "manual",
+            "endtime": "0",
             "resources": [
-                { "type": "capacity", "value": 5 }
+                { "type": "capacity", "value": 8 }
             ],
             "files": {
                 "in": [],
@@ -1372,8 +772,22 @@
         },
         {
             "id": "t22",
-            "name": "Protección de contraseñas",
+            "name": "Password Secure: Protección de contraseñas",
             "endmode": "manual",
+            "endtime": "0",
+            "resources": [
+                { "type": "capacity", "value": 8 }
+            ],
+            "files": {
+                "in": [],
+                "out": []
+            }
+        },
+        {
+            "id": "t23",
+            "name": "Paralely: Computación en paralelo",
+            "endmode": "manual",
+            "endtime": "0",
             "resources": [
                 { "type": "capacity", "value": 10 }
             ],
@@ -1383,9 +797,23 @@
             }
         },
         {
-            "id": "t23",
-            "name": "Computación en paralelo",
+            "id": "t24",
+            "name": "Educatel: E-Learning",
             "endmode": "manual",
+            "endtime": "0",
+            "resources": [
+                { "type": "capacity", "value": 10 }
+            ],
+            "files": {
+                "in": [],
+                "out": []
+            }
+        },
+        {
+            "id": "t25",
+            "name": "Visor en tiempo real del estado de la ciudad",
+            "endmode": "manual",
+            "endtime": "0",
             "resources": [
                 { "type": "capacity", "value": 10 }
             ],
@@ -1396,7 +824,49 @@
         }
     ],
     "files": [
-        { "id": "f1", "name": "Datos de GPS", "type": "csv" },
-        { "id": "f2", "name": "XXXXX", "type": "txt" }
+        {
+            "id": "f1",
+            "name": "Datos de GPS",
+            "type": "data" },
+        {
+            "id": "f2",
+            "name": "Plan de Rutas",
+            "type": "video" },
+        {
+            "id": "f3",
+            "name": "Informe ambiental",
+            "type": "text" },
+        {
+            "id": "f4",
+            "name": "Resultados de búsqueda",
+            "type": "text-format" },
+        {
+            "id": "f5",
+            "name": "Indicadores de gobierno",
+            "type": "image" },
+        {
+            "id": "f6",
+            "name": "Indicadores de educación",
+            "type": "image" },
+        {
+            "id": "f7",
+            "name": "Indicadores de Salud",
+            "type": "image" },
+        {
+            "id": "f8",
+            "name": "Indicadores de Seguridad",
+            "type": "image" },
+        {
+            "id": "f9",
+            "name": "Indicadores de Urbanismo",
+            "type": "image" },
+        {
+            "id": "f10",
+            "name": "Indicadores de Medio Ambiente",
+            "type": "image" },
+        {
+            "id": "f11",
+            "name": "Bolsa de empleo: Base de datos de empleos y empleados disponibles",
+            "type": "data" }
     ]
 }

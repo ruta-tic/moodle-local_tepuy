@@ -33,8 +33,8 @@ class Action {
                                 // Actions to GameAngi.
                                 'playcard', 'unplaycard', 'endcase',
                                 // Actions to Games SmartCity and Pandemia.
-                                'sc_gamestart', 'sc_changetimeframe', 'sc_playaction',
-                                'sc_playtechnology', 'sc_stopaction', 'sc_stoptechnology');
+                                'sc_gamestart', 'sc_changetimeframe', 'sc_playaction', 'sc_playtechnology', 'sc_stopaction',
+                                'sc_stoptechnology', 'sc_gameover');
 
     public $action;
 
@@ -85,7 +85,7 @@ class Action {
 
         require_once($CFG->dirroot . '/mod/chat/lib.php');
 
-        if ($params && isset($params['groupid']) {
+        if ($params && is_array($params) && isset($params['groupid'])) {
             $chatuser = $this->getChatUserByGroupid($params['groupid']);
         } else {
             $chatuser = $this->getChatUser();
@@ -97,6 +97,11 @@ class Action {
 
         if (!property_exists($this->request, 'tosender')) {
             $this->request->tosender = false;
+        }
+
+        if (property_exists($this->request, 'data') && !is_string($this->request->data)) {
+            Logging::trace(Logging::LVL_DEBUG, 'Chat message is not a string. Develop error?');
+            return false;
         }
 
         //A Moodle action to save a chat message.
@@ -247,7 +252,10 @@ class Action {
 
             $data->team = $game->summary->team;
             $data->games = $game->getGames();
-            $data->timeframe = (int)$game->summary->timeframe;
+            $data->timeframe = (int)$game->summary->timecontrol->timeframe;
+            $data->timelapse = (int)$game->getTimelapse();
+            $data->timeelapsed = $game->getTimeelapsed();
+            $data->lapses = (int)$game->getLapses();
             $data->health = $game->getHealth();
             $data->actions = $game->getActions($this->user->id);
             $data->technologies = $game->getTechnologies($this->user->id);
@@ -257,9 +265,11 @@ class Action {
             if($current) {
                 $data->starttime = $current->starttime;
                 $data->duedate = $game->getDuedate();
+                $data->currentlapse = $game->getCurrentLapse();
             } else {
                 $data->starttime = 0;
                 $data->duedate = 0;
+                $data->currentlapse = 0;
             }
 
         }
@@ -780,20 +790,57 @@ class Action {
         return true;
     }
 
+    private function action_sc_gameover() {
+
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        $game = new SmartCity($this->session->groupid);
+
+        try {
+            $ended = $game->gameover();
+        } catch (ByCodeException $ce) {
+            Messages::error($ce->getMessage(), null, $this->from);
+        }
+
+        if ($ended) {
+            $data = new \stdClass();
+            $data->reason = $ended;
+
+            $msg = $this->getResponse($data);
+            $msg = json_encode($msg);
+
+            $clients = SocketSessions::getClientsById($this->from->resourceId);
+            foreach ($clients as $client) {
+                if (SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
+                    // Send to each client connected into same group, including the sender.
+                    $client->send($msg);
+                }
+            }
+
+            Logging::trace(Logging::LVL_DETAIL, 'Gameover: ' . $ended);
+            $this->notifyActionToAll();
+        }
+
+        return true;
+    }
+
     // It's a special action because this is a cron's action.
-    private function sc_actioncompleted($requestdata) {
+    public function sc_actioncompleted($requestdata) {
 
         $data = new \stdClass();
         $data->id = $requestdata->id;
         $data->resources = $requestdata->resources;
 
-        $msg = $this->getResponse($data);
+        $msg = $this->getResponse($data, 'sc_actioncompleted');
         $msg = json_encode($msg);
 
         $clients = SocketSessions::getClientsById($this->from->resourceId);
         foreach ($clients as $client) {
-            if (SocketSessions::getSSById($client->resourceId)->groupid == $requestdata->groupid) {
-                // Send to each client connected into same group, including the sender.
+            if (($client !== $this->from) &&
+                    SocketSessions::getSSById($client->resourceId)->groupid == $requestdata->groupid) {
+                // The sender (cron) is not the receiver, send to each client connected into same group.
                 $client->send($msg);
             }
         }
@@ -809,20 +856,21 @@ class Action {
     }
 
     // It is a special action because is used by cron.
-    private function sc_technologycompleted($requestdata) {
+    public function sc_technologycompleted($requestdata) {
 
         $data = new \stdClass();
         $data->id = $requestdata->id;
         $data->resources = $requestdata->resources;
         $data->files = $requestdata->files;
 
-        $msg = $this->getResponse($data);
+        $msg = $this->getResponse($data, 'sc_technologycompleted');
         $msg = json_encode($msg);
 
         $clients = SocketSessions::getClientsById($this->from->resourceId);
         foreach ($clients as $client) {
-            if (SocketSessions::getSSById($client->resourceId)->groupid == $requestdata->groupid) {
-                // Send to each client connected into same group, including the sender.
+            if (($client !== $this->from) &&
+                    SocketSessions::getSSById($client->resourceId)->groupid == $requestdata->groupid) {
+                // The sender (cron) is not the receiver, send to each client connected into same group.
                 $client->send($msg);
             }
         }
@@ -837,8 +885,85 @@ class Action {
         return true;
     }
 
-    FALTAN 'sc_healthupdate', 'sc_gameover'
+    // It is a special action because is used by cron.
+    public function sc_healthupdate($requestdata) {
 
+        $data = new \stdClass();
+        $data->general = $requestdata->general;
+        $data->details = $requestdata->details;
+        $data->lastmeasured = $requestdata->lastmeasured;
+        $data->lifetime = $requestdata->lifetime;
+
+        $msg = $this->getResponse($data, 'sc_healthupdate');
+        $msg = json_encode($msg);
+
+        $clients = SocketSessions::getClientsById($this->from->resourceId);
+        foreach ($clients as $client) {
+            if (($client !== $this->from) &&
+                    SocketSessions::getSSById($client->resourceId)->groupid == $requestdata->groupid) {
+                // The sender (cron) is not the receiver, send to each client connected into same group.
+                $client->send($msg);
+            }
+        }
+
+        Logging::trace(Logging::LVL_DETAIL, 'Health updated');
+
+        // Not message by health update.
+
+        return true;
+    }
+
+    // It is a special action because is used by cron.
+    public function sc_lapsechanged($requestdata) {
+
+        $data = new \stdClass();
+        $data->lapse = $requestdata->lapse;
+
+        $msg = $this->getResponse($data, 'sc_lapsechanged');
+        $msg = json_encode($msg);
+
+        $clients = SocketSessions::getClientsById($this->from->resourceId);
+        foreach ($clients as $client) {
+            if (($client !== $this->from) &&
+                    SocketSessions::getSSById($client->resourceId)->groupid == $requestdata->groupid) {
+                // The sender (cron) is not the receiver, send to each client connected into same group.
+                $client->send($msg);
+            }
+        }
+
+        Logging::trace(Logging::LVL_DETAIL, 'Lapse changed');
+
+        // Not message by health update.
+
+        return true;
+    }
+
+    // It is a special action because is used by cron.
+    public function sc_autogameover($requestdata) {
+
+        $data = new \stdClass();
+        $data->reason = $requestdata->reason;
+
+        $msg = $this->getResponse($data, 'sc_gameover');
+        $msg = json_encode($msg);
+
+        $clients = SocketSessions::getClientsById($this->from->resourceId);
+        foreach ($clients as $client) {
+            if (($client !== $this->from) &&
+                    SocketSessions::getSSById($client->resourceId)->groupid == $requestdata->groupid) {
+                // The sender (cron) is not the receiver, send to each client connected into same group.
+                $client->send($msg);
+            }
+        }
+
+        Logging::trace(Logging::LVL_DETAIL, 'The game is over');
+
+        $params = array();
+        $params['groupid'] = $requestdata->groupid;
+        $this->notifyActionToAll('actiongameover', false, $params);
+
+        return true;
+    }
 
     // Internal methods.
     private function getChatUser() {
@@ -866,11 +991,13 @@ class Action {
         global $DB;
 
         $params = array('groupid' => $groupid,  'cmid' => $this->session->cmid);
-        if (!$socketsess = $DB->get_record('local_tepuy_socket_sessions', $params)) {
+        if (!$socketsess = $DB->get_records('local_tepuy_socket_sessions', $params)) {
             Messages::error('chatnotavailable', null, $this->from);
         }
 
-        if (!$socketchat = $DB->get_record('local_tepuy_socket_chat', array('sid' => $socketsess->id))) {
+        $sss = array_shift($socketsess);
+
+        if (!$socketchat = $DB->get_record('local_tepuy_socket_chat', array('sid' => $sss->id))) {
             Messages::error('chatnotavailable', null, $this->from);
         }
 
@@ -886,10 +1013,15 @@ class Action {
         unset(self::$chats[$conn->resourceId]);
     }
 
-    private function getResponse($data) {
+    private function getResponse($data, $action = '') {
         $msg = new \stdClass();
 
-        $msg->action = $this->action;
+        if (empty($action)) {
+            $msg->action = $this->action;
+        } else {
+            $msg->action = $action;
+        }
+
         $msg->data = $data;
 
         return $msg;

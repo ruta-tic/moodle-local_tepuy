@@ -75,7 +75,7 @@ class SmartCity {
 
         $this->summary->team = json_decode($this->summary->team);
         $this->summary->games = json_decode($this->summary->games);
-        $this->summary->timecontrol = json_decode($this->summary->timecontrol);
+        $this->summary->timecontrol = new SmartCityTimecontrol($this->summary->timecontrol);
 
         $this->_currentgame = $this->currentGame();
 
@@ -88,8 +88,13 @@ class SmartCity {
 
             $this->_currentlapse = current($this->_lapses);
 
-            foreach($this->_lapses as $key => $lapse) {
+            foreach ($this->_lapses as $key => $lapse) {
                 $this->_lapses[$key]->zones = json_decode($lapse->zones);
+
+                // In first lapse the reducer does not exist.
+                if ($this->_lapses[$key]->lapse == 0) {
+                    $this->_lapses[$key]->reducer = null;
+                }
             }
 
         } else {
@@ -100,7 +105,7 @@ class SmartCity {
     public function currentGame() {
 
         if ($this->summary->games && is_array($this->summary->games)) {
-            foreach($this->summary->games as $game) {
+            foreach ($this->summary->games as $game) {
                 if ($game->state == self::STATE_ACTIVE) {
                     return $game;
                 }
@@ -125,41 +130,6 @@ class SmartCity {
         }
 
         return $running;
-    }
-
-    public function endCurrentGame() {
-        global $DB;
-
-        $game = $this->currentGame();
-
-        $score = false; //ToDo: calcular y definir estado del juego
-
-        $game->state = $score > 80 ? self::STATE_PASSED : self::STATE_FAILED;
-
-        if ($game->state != self::STATE_ACTIVE) {
-            $oneactive = false;
-
-            //Choose the next case.
-            foreach($this->summary->games as $localcase) {
-                if ($localcase->state == self::STATE_LOCKED) {
-                    $localcase->state = self::STATE_ACTIVE;
-                    $oneactive = true;
-                    break;
-                }
-            }
-
-            if (!$oneactive) {
-                $this->summary->state = self::STATE_ENDED;
-            }
-        }
-
-        $data = new \stdClass();
-        $data->id = $this->summary->id;
-        $data->state = $this->summary->state;
-        $data->team = json_encode($this->summary->team);
-        $data->games = json_encode($this->summary->games);
-
-        $DB->update_record('local_tepuy_gamesmartcity', $data);
     }
 
     private function init() {
@@ -218,8 +188,10 @@ class SmartCity {
 
         $this->summary->timecontrol = new SmartCityTimecontrol();
         $this->summary->timecontrol->starttime = time();
+        $this->summary->timecontrol->lastmeasured = 0;
+        $this->summary->timecontrol->lastcalc = $this->summary->timecontrol->starttime;
 
-        foreach($this->summary->games as $game) {
+        foreach ($this->summary->games as $game) {
             if ($game->state == self::STATE_LOCKED) {
                 $game->state = self::STATE_ACTIVE;
                 $game->level = $level;
@@ -243,13 +215,12 @@ class SmartCity {
         $data->lapse = 0;
 
         $data->zones = [];
-        $k = 0;
-        foreach($this->_level->zones as $value) {
-            $k++;
+
+        foreach ($this->_level->zones as $key => $value) {
             $zone = new \stdClass();
-            $zone->zone = $k;
+            $zone->zone = $key;
             $zone->value = $value;
-            $data->zones[] = $zone;
+            $data->zones[$key] = $zone;
         }
         $data->zones = json_encode($data->zones);
 
@@ -283,7 +254,7 @@ class SmartCity {
 
         $due = SmartCityTimecontrol::time1xToX($duein1x, $this->summary->timecontrol->timeframe);
 
-        return time() + $due;
+        return time() + round($due);
     }
 
     /**
@@ -303,9 +274,26 @@ class SmartCity {
         }
 
         $res->general = (int)$this->_currentlapse->score;
-        $res->details = $this->_currentlapse->zones;
-        $res->lastmeasured = round($this->_current->timecontrol->lastmeasured * 100 / $this->_level->lapses);
-        $res->lifetime = time() + $this->estimateEndScore();
+
+        $res->details = array();
+
+        $lapse = $this->getLapse($this->summary->timecontrol->lastmeasured);
+        if (!$lapse) {
+            $lapse = $this->_currentlapse;
+        }
+
+        foreach ($lapse->zones as $zone) {
+            $one = new \stdClass();
+            $one->zone = $zone->zone;
+            $one->value = round($zone->value * 100);
+            $res->details[] = $one;
+        }
+
+        $res->lastmeasured = $this->summary->timecontrol->lastmeasured;
+
+        $lifetime = SmartCityTimecontrol::time1xToX($this->estimateEndScore(), $this->summary->timecontrol->timeframe);
+
+        $res->lifetime = round($lifetime);
 
         return $res;
     }
@@ -400,7 +388,7 @@ class SmartCity {
     }
 
     private function getLapse($n) {
-        foreach($this->_lapses as $lapse) {
+        foreach ($this->_lapses as $lapse) {
             if ($lapse->lapse == $n) {
                 return $lapse;
             }
@@ -424,7 +412,7 @@ class SmartCity {
 
         $params = array();
         $params['id'] = $this->summary->id;
-        $params['timecontrol'] = $this->summary->timecontrol;
+        $params['timecontrol'] = json_encode($this->summary->timecontrol);
 
         return $DB->update_record('local_tepuy_gamesmartcity', $params);
     }
@@ -444,7 +432,7 @@ class SmartCity {
         }
 
         // Check if act is running.
-        foreach($useracts->running as $runningact) {
+        foreach ($useracts->running as $runningact) {
             if ($actid == $runningact->id) {
                 Logging::trace(Logging::LVL_DEBUG, 'Action is running: ' . $actid);
                 return false;
@@ -471,7 +459,7 @@ class SmartCity {
 
         $runningact = new \stdClass();
         $runningact->id = $actid;
-        $runningact->starttime = time();
+        $runningact->starttime = $this->getTimeelapsed();
         $this->_currentrunning->actions[] = $runningact;
 
         $params = array();
@@ -499,9 +487,10 @@ class SmartCity {
 
         // Check if act is running.
         $running = false;
-        foreach($this->_currentrunning->actions as $key => $runningact) {
+        foreach ($this->_currentrunning->actions as $key => $runningact) {
             if ($actid == $runningact->id) {
                 unset($this->_currentrunning->actions[$key]);
+                $this->_currentrunning->actions = array_values($this->_currentrunning->actions);
                 $running = true;
                 break;
             }
@@ -537,7 +526,7 @@ class SmartCity {
         }
 
         // Check if the technology is running.
-        foreach($usertechs->running as $runningtech) {
+        foreach ($usertechs->running as $runningtech) {
             if ($techid == $runningtech->id) {
                 Logging::trace(Logging::LVL_DEBUG, 'Technology is running: ' . $techid);
                 return false;
@@ -558,7 +547,7 @@ class SmartCity {
 
         $runningtech = new \stdClass();
         $runningtech->id = $techid;
-        $runningtech->starttime = time();
+        $runningtech->starttime = $this->getTimeelapsed();
         $this->_currentrunning->technologies[] = $runningtech;
 
         $params = array();
@@ -586,9 +575,10 @@ class SmartCity {
 
         // Check if technology is running.
         $running = false;
-        foreach($this->_currentrunning->technologies as $key => $runningtech) {
+        foreach ($this->_currentrunning->technologies as $key => $runningtech) {
             if ($techid == $runningtech->id) {
                 unset($this->_currentrunning->technologies[$key]);
+                $this->_currentrunning->technologies = array_values($this->_currentrunning->technologies);
                 $running = true;
                 break;
             }
@@ -600,6 +590,12 @@ class SmartCity {
             return false;
         }
 
+        if ($this->checkTechnologyToRunningAction($techid)) {
+            Logging::trace(Logging::LVL_DEBUG, 'Technology is required by a running action: ' . $techid);
+            throw new ByCodeException('techrunningrequired');
+            return false;
+        }
+
         $params = array();
         $params['id'] = $this->_currentrunning->id;
         $params['technologies'] = json_encode($this->_currentrunning->technologies);
@@ -607,6 +603,70 @@ class SmartCity {
         $DB->update_record('local_tepuy_gamesmartcity_running', $params);
 
         return true;
+    }
+
+    public function gameover() {
+        global $DB;
+
+        $goodend = $this->summary->timecontrol->starttime + ($this->_level->timelapse * $this->level->lapses);
+        $goodend = SmartCityTimecontrol::time1xToX($goodend, $this->summary->timecontrol->timeframe);
+
+        $end = $this->summary->timecontrol->starttime + $this->getTimeelapsed() + $this->estimateEndScore();
+        $end = SmartCityTimecontrol::time1xToX($end, $this->summary->timecontrol->timeframe);
+
+        $result = $end < $goodend ? self::STATE_FAILED : self::STATE_PASSED;
+
+        $current = $this->currentGame();
+        $current->state = $result;
+
+        $availableyet = false;
+        foreach($this->summary->games as $game) {
+            if ($game->state == self::STATE_LOCKED) {
+                $availableyet = true;
+                break;
+            }
+        }
+
+        $params = array();
+
+        // If not more games available.
+        if (!$availableyet) {
+            $params['state'] = self::STATE_ENDED;
+        }
+
+        $params['games'] = json_encode($this->summary->games);
+
+        $DB->update_record('local_tepuy_gamesmartcity', $params);
+
+        return $result;
+    }
+
+    public function autoGameover($reason) {
+        global $DB;
+
+        $current = $this->currentGame();
+        $current->state = $reason;
+
+        $available = false;
+        foreach($this->summary->games as $game) {
+            if ($game->state == self::STATE_LOCKED) {
+                $available = true;
+                break;
+            }
+        }
+
+        $params = array();
+        $params['id'] = $current->id;
+
+        // If not more games available.
+        if (!$available) {
+            $params['state'] = self::STATE_ENDED;
+        }
+
+        $params['games'] = json_encode($this->summary->games);
+
+        return $DB->update_record('local_tepuy_gamesmartcity', $params);
+
     }
 
     public function availableResources() {
@@ -622,11 +682,11 @@ class SmartCity {
         $tech = self::$_data->technologiesbyid[$techid];
         $resources = $this->availableResources();
 
-        foreach($tech->resources as $required) {
+        foreach ($tech->resources as $required) {
 
-            foreach($resources as $key => $resource) {
-                if ($key == $required->type) {
-                    if ($resource < $required->value) {
+            foreach ($resources as $key => $resource) {
+                if ($resource->type == $required->type) {
+                    if ($resource->value < $required->value) {
                         return false;
                     }
                     break;
@@ -638,14 +698,14 @@ class SmartCity {
     }
 
     public function hasResourcesToAction($actid) {
-        $act = self::$_data->actionsbyid[$actid];
+        $actdata = self::$_data->actionsbyid[$actid];
         $resources = $this->availableResources();
 
-        foreach($act->resources as $required) {
+        foreach ($actdata->resources as $required) {
 
-            foreach($resources as $key => $resource) {
-                if ($key == $required->type) {
-                    if ($resource < $required->value) {
+            foreach ($resources as $key => $resource) {
+                if ($resource->type == $required->type) {
+                    if ($resource->value < $required->value) {
                         return false;
                     }
                     break;
@@ -663,7 +723,7 @@ class SmartCity {
         $tech = self::$_data->technologiesbyid[$techid];
         $files = $this->getFiles();
 
-        foreach($tech->files->in as $file) {
+        foreach ($tech->files->in as $file) {
             if (!in_array($file, $files)) {
                 return false;
             }
@@ -679,7 +739,7 @@ class SmartCity {
         $act = self::$_data->actionsbyid[$actid];
         $currentfiles = $this->getFiles();
 
-        foreach($act->files as $file) {
+        foreach ($act->files as $file) {
             if (!in_array($file, $currentfiles)) {
                 return false;
             }
@@ -693,9 +753,9 @@ class SmartCity {
         $act = self::$_data->actionsbyid[$actid];
         $runningtechs = $this->_currentrunning->technologies;
 
-        foreach($act->technologies as $tech) {
+        foreach ($act->technologies as $tech) {
             $available = false;
-            foreach($runningtechs as $running) {
+            foreach ($runningtechs as $running) {
                 if ($running->id == $tech) {
                     $available = true;
                     break;
@@ -710,10 +770,40 @@ class SmartCity {
         return true;
     }
 
-    public function cron($actionparent) {
+    /**
+     *
+     * Check if the technology is required by some running action.
+     *
+     * @param $techid string the technology to check
+     * @return bool true if is required, false in another case.
+     */
+    public function checkTechnologyToRunningAction($techid) {
+
+        $runningacts = $this->_currentrunning->actions;
+
+        foreach ($runningacts as $runningact) {
+            $act = self::$_data->actionsbyid[$runningact->id];
+
+            foreach ($act->technologies as $tech) {
+                if ($tech->id == $techid) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public function cron($cronparent) {
+        global $DB;
+
+        if ($this->summary->timecontrol->starttime == 0 || !$this->_currentlapse) {
+            return;
+        }
 
         $estimatelapse = $this->estimateCurrentLapse();
 
+        $changehealth = false;
         while ($this->_currentlapse->lapse < $estimatelapse) {
 
             // The actions are processed and the new lapse is created.
@@ -724,14 +814,14 @@ class SmartCity {
 
             // Initialize lapse profit array.
             $profit = array();
-            foreach ($this->_level->zones as $key => $zone) {
-                $profit[$key] = 0;
+            foreach ($this->_level->zones as $key => $value) {
+                $profit[$key] = $value;
             }
 
             $newresources = 0;
             $numberactions = 0;
             foreach ($this->_currentrunning->actions as $key => $action) {
-                $ending = SmartCityData::isExpiredAction($action);
+                $ending = self::$_data->isExpiredAction($action, $this->getTimeelapsed(), $this->_level->timelapse);
                 $numberactions++;
 
                 // Nothing to do.
@@ -739,25 +829,32 @@ class SmartCity {
                     continue;
                 }
 
-                foreach ($action->zones as $m => $value) {
-                    $this->_currentlapse->zones->$m += $value;
-                    $profit[$m] += $value;
+                $changehealth = true;
+
+                $actdata = self::$_data->actionsbyid[$action->id];
+                foreach ($actdata->zones as $m => $value) {
+                    $profit[$m] += ($value / 100);
                 }
 
-                $newresources += $action->newresources;
+                $newresources += $actdata->newresources;
 
-                if ($action->endmode == 'auto') {
+                if ($actdata->endmode == 'auto') {
                     unset($this->_currentrunning->actions[$key]);
 
                     $requestdata = array(
                             'id' => $action->id,
                             'resources' => $this->availableResources(),
-                            'groupid' => $this->groupid;
-                            'name' => $action->name;
+                            'groupid' => $this->groupid,
+                            'name' => $actdata->name
                         );
                     $cronparent->sc_actioncompleted((object)$requestdata);
                 }
             }
+
+            foreach ($this->_currentlapse->zones as $zone) {
+                $zone->value = round($profit[$zone->zone], 2);
+            }
+
             $newlapse->zones = $this->_currentlapse->zones;
             $newlapse->newresources = $newresources;
 
@@ -767,47 +864,106 @@ class SmartCity {
                                                     $this->_currentlapse->reducer,
                                                     $numberactions);
 
-            $newlapse->reducer = $this->calcDepreciation($this->_currentlapse->reducer, $numberactions);
+            $newlapse->reducer = $this->calcDiscontent($this->_currentlapse->reducer, $numberactions);
             $newlapse->timemodify = time();
 
-            $data = clone($newlapse);
-            $data->zones = json_encode($data->zones);
+            $data = new \stdClass();
+            $data->parentid = $newlapse->parentid;
+            $data->game = $newlapse->game;
+            $data->lapse = $newlapse->lapse;
+            $data->zones = json_encode($newlapse->zones);
+            $data->score = $newlapse->score;
+            $data->newresources = $newlapse->newresources;
+            $data->reducer = $newlapse->reducer;
+            $data->timemodify = $newlapse->timemodify;
+
+            echo "\n======================================\n";
+            var_dump($newlapse);
+            var_dump($data);
+            echo "\n======================================\n";
 
             // Insert the calculated lapse.
             $newlapse->id = $DB->insert_record('local_tepuy_gamesmartcity_lapses', $data, true);
             $this->_currentlapse = $newlapse;
+            $this->_lapses[] = $newlapse;
 
 
             // The technologies are processed.
             foreach ($this->_currentrunning->technologies as $key => $tech) {
-                $ending = SmartCityData::isExpiredTechnology($tech);
+                $ending = self::$_data->isExpiredTechnology($tech, $this->getTimeelapsed(), $this->_level->timelapse);
 
                 // Nothing to do.
                 if (!$ending) {
                     continue;
                 }
 
-                foreach ($tech->files->out as $fileid) {
+                if ($tech->id == 't25') {
+                    $this->summary->timecontrol->lastmeasured = $newlapse->lapse;
+
+                    $params = array();
+                    $params['id'] = $this->_currentrunning->id;
+                    $params['timecontrol'] = json_encode($this->summary->timecontrol);
+                    $DB->update_record('local_tepuy_gamesmartcity', $params);
+
+                    $requestdata = $this->getHealth();
+                    $requestdata->groupid = $this->groupid;
+                    $cronparent->sc_healthupdate($requestdata);
+                }
+
+                $techdata = self::$_data->technologiesbyid[$tech->id];
+                foreach ($techdata->files->out as $fileid) {
                     $newfile = new \stdClass();
                     $newfile->id = $fileid;
                     $newfile->creationtime = time();
-                    $this->_currentrunning->availablefiles[] = $file;
+                    $this->_currentrunning->availablefiles[] = $newfile;
                 }
 
-                if ($tech->endmode == 'auto') {
+                if ($techdata->endmode == 'auto') {
                     unset($this->_currentrunning->technologies[$key]);
 
                     $requestdata = array(
                             'id' => $tech->id,
                             'resources' => $this->availableTechResources(),
                             'files' => $this->_currentrunning->availablefiles,
-                            'groupid' => $this->groupid;
-                            'name' => $tech->name;
+                            'groupid' => $this->groupid,
+                            'name' => $techdata->name
                         );
                     $cronparent->sc_technologycompleted((object)$requestdata);
                 }
             }
+
+
+            $requestdata = array(
+                    'lapse' => $newlapse->lapse,
+                    'groupid' => $this->groupid
+                );
+            $cronparent->sc_lapsechanged((object)$requestdata);
+
+            // Check ending reasons.
+            if ($newlapse->score <= 0) {
+                $this->autoGameover(self::STATE_FAILED);
+
+                $requestdata = array(
+                        'reason' => self::STATE_FAILED,
+                        'groupid' => $this->groupid
+                    );
+                $cronparent->sc_autogameover((object)$requestdata);
+
+            } else if ($this->_currentlapse->lapse == $this->_level->lapses) {
+                $this->autoGameover(self::STATE_PASSED);
+
+                $requestdata = array(
+                        'reason' => self::STATE_PASSED,
+                        'groupid' => $this->groupid
+                    );
+                $cronparent->sc_autogameover((object)$requestdata);
+
+            }
+
         }
+
+        $this->_currentrunning->actions = array_values($this->_currentrunning->actions);
+        $this->_currentrunning->technologies = array_values($this->_currentrunning->technologies);
 
         $params = array();
         $params['id'] = $this->_currentrunning->id;
@@ -826,13 +982,19 @@ class SmartCity {
     }
 
     private function refreshTimeelapsed() {
+        global $DB;
+
+        if ($this->summary->timecontrol->starttime == 0) {
+            return true;
+        }
 
         $calctime = time();
 
-        // Only recalculate after one minute.
-        if ($calctime - $this->summary->timecontrol->lastcalc > 60) {
-            return true;
-        }
+        //ToDo: validar el período en que se requiere recalcular
+        // Only recalculate after 5 seconds.
+         if (($calctime - $this->summary->timecontrol->lastcalc) < 5) {
+             return true;
+         }
 
         $new = ($calctime - $this->summary->timecontrol->lastcalc);
         $new = $this->summary->timecontrol->timeelapsed +
@@ -843,9 +1005,14 @@ class SmartCity {
 
         $params = array();
         $params['id'] = $this->summary->id;
-        $params['timecontrol'] = $this->summary->timecontrol;
+        $params['timecontrol'] = json_encode($this->summary->timecontrol);
 
         return $DB->update_record('local_tepuy_gamesmartcity', $params);
+    }
+
+    public function getTimeelapsed() {
+        $this->refreshTimeelapsed();
+        return $this->summary->timecontrol->timeelapsed;
     }
 
     /*
@@ -855,12 +1022,60 @@ class SmartCity {
      */
     private function estimateEndScore() {
 
+        if (!$this->_currentrunning) {
+            return 0;
+        }
+
         $R = $this->_currentlapse->score;
+        echo "R: ";
+        var_dump($R);
+        echo "\n";
 
-        // ($D * $Fc) is the current monthly consum.
-        $end = $R / ($D * $Fc);
+        // $D is the depreciation value.
+        $D = 100 / $this->_level->lapses;
+        echo "D: ";
+        var_dump($D);
+        echo "\n";
 
-        return SmartCityTimecontrol::time1xToX($end, $this->summary->timecontrol->timeframe);
+        $profit = array();
+        foreach ($this->_level->zones as $key => $value) {
+            $profit[$key] = 0;
+        }
+
+        $numberactions = 0;
+        foreach ($this->_currentrunning->actions as $key => $action) {
+            $ending = self::$_data->isExpiredAction($action, $this->getTimeelapsed(), $this->_level->timelapse);
+            $numberactions++;
+
+            // Nothing to do.
+            if (!$ending) {
+                continue;
+            }
+
+            $actdata = self::$_data->actionsbyid[$action->id];
+            foreach ($actdata->zones as $m => $value) {
+                $profit[$m] += $value;
+            }
+        }
+        echo "P: ";
+        var_dump($profit);
+        echo "\n";
+
+
+
+        // $FC is the consumption factor.
+        $FC = $this->getConsumptionFactor($profit, $this->_currentlapse->reducer, $numberactions);
+        echo "FC: ";
+        var_dump($FC);
+        echo "\n";
+
+        // ($D * $FC) is the current monthly consum.
+        $end = ($R / ($D * $FC)) * $this->_level->timelapse;
+        echo "End: ";
+        var_dump($end);
+        echo "\n";
+
+        return $end;
     }
 
     /**
@@ -868,7 +1083,7 @@ class SmartCity {
      *
      * @param int $NR new resources.
      * @param int $l the lapse to calculate resources.
-     * @param float $DFp depreciation factor on previous lapse
+     * @param float $DFp discontent factor on previous lapse
      * @param array $P profit by actions on current lapse.
      * @param int $NA number of played actions.
      * @return int resources for the lapse $l.
@@ -879,57 +1094,62 @@ class SmartCity {
         // Resources in previous period.
         $prevlapse = $this->getLapse($l - 1);
 
+        // $D is the depreciation value.
         $D = 100 / $this->_level->lapses;
 
-        $Ex = 0;
+        $FC = $this->getConsumptionFactor($P, $DFp, $NA);
 
-        foreach($P as $key => $value) {
-
-            $improvement = $this->_level->zones[$key] + $value/100;
-            $maximprovement = ($improvement > 1 ? 1 : $improvement);
-
-            $DF = $this->calcDepreciation($DFp, $NA);
-            $Bx = ($maximprovement < 0 ? 0 : $maximprovement) - $DF;
-            $Ex += 1 - $Bx;
-        }
-
-        $Nc = count($P);
-        $Fc = ($Ex * $this->_level->cr) / $Nc;
 
         if ($prevlapse) {
-            $R0 = $prevlapse->resources;
+            $R0 = $prevlapse->score;
         } else {
             $R0 = $this->_level->score;
         }
 
-        $R = $R0 - $D * $Fc + $NR;
+        $R = $R0 - $D * $FC + $NR;
 
         return $R;
 
     }
 
+    private function getConsumptionFactor($P, $DFp, $NA) {
+        $Ex = 0;
+
+        $DF = $DFp === null ? 0 : $this->calcDiscontent($DFp, $NA);
+        echo "DF: ";
+        var_dump($DF);
+        echo "\n";
+
+        foreach ($P as $key => $value) {
+
+            $improvement = $this->_level->zones[$key] + $value;
+            $maximprovement = ($improvement > 1 ? 1 : $improvement);
+
+            $Bx = ($maximprovement < 0 ? 0 : $maximprovement) - $DF;
+            $Ex += 1 - $Bx;
+        }
+
+        $NC = count($P);
+        return ($Ex * $this->_level->cr) / $NC;
+    }
+
     /**
-     * Calculation of next depreciation.
+     * Calculation of next discontent factor.
      *
      * @param int $NR new resources.
      * @param int $l the lapse to calculate resources.
-     * @param float $DFp depreciation factor on previous lapse
+     * @param float $DFp discontent factor on previous lapse
      * @param array $P profit by actions on current lapse.
      * @param int $NA number of played actions.
      * @return int resources for the lapse $l.
      *
      */
-    private function calcDepreciation($DFp, $NA) {
+    private function calcDiscontent($DFp, $NA) {
 
-        $minactions = 1 - $NA / $this->_level->ea;
+        $minactions = 1 - ($NA / $this->_level->ea);
         $minactions = $minactions < 0 ? 0 : $minactions / $this->_level->ds;
 
         return $DFp + $minactions;
-    }
-
-    public function getTimeelapsed() {
-        $this->refreshTimeelapsed();
-        return $this->summary->timecontrol->timeelapsed;
     }
 
     public function getGameDuration() {
@@ -938,10 +1158,29 @@ class SmartCity {
     }
 
     public function estimateCurrentLapse() {
-        $this->refreshTimeelapsed();
-
-        return Floor($this->summary->timecontrol->timeelapsed / $this->_lapses->timelapse());
+        return Floor($this->getTimeelapsed() / $this->_level->timelapse);
     }
+
+    public function getCurrentLapse() {
+        return (int)$this->_currentlapse->lapse;
+    }
+
+    public function getTimelapse() {
+        if (!$this->_level) {
+            return 0;
+        }
+
+        return $this->_level->timelapse;
+    }
+
+    public function getLapses() {
+        if (!$this->_level) {
+            return 0;
+        }
+
+        return $this->_level->lapses;
+    }
+
 
     private static function loadData() {
         $json = file_get_contents(self::SOURCE_DATA);
@@ -1001,7 +1240,7 @@ class SmartCityLevel {
     // Is required really or with $zones is sufficient?
     public $ivz = 50;
 
-    public $zones = array(50, 50, 50, 50, 50, 50);
+    public $zones = array(0.5, 0.5, 0.5, 0.5, 0.5, 0.5);
 
     // Constant of reality.
     // [2, 3, 4] = [easy, medium, hard]
@@ -1010,7 +1249,7 @@ class SmartCityLevel {
     // Minimum expected actions.
     public $ea = 7;
 
-    // Depreciation softener
+    // Depreciation softener.
     public $ds = 10;
 
 }
@@ -1029,12 +1268,12 @@ class SmartCityData {
         $this->files = $files;
 
         $this->actionsbyid = array();
-        foreach($this->actions as $action) {
+        foreach ($this->actions as $action) {
             $this->actionsbyid[$action->id] = $action;
         }
 
         $this->technologiesbyid = array();
-        foreach($this->technologies as $tech) {
+        foreach ($this->technologies as $tech) {
             $this->technologiesbyid[$tech->id] = $tech;
         }
     }
@@ -1070,7 +1309,7 @@ class SmartCityData {
         } while($assignedcount < $fullsize && $iteractions < 1000);
 
         // Assign free actions when randomly was not assigned in minimus interactions.
-        foreach($free as $key => $one) {
+        foreach ($free as $key => $one) {
             if (!$one) {
                 continue;
             }
@@ -1115,7 +1354,7 @@ class SmartCityData {
         } while($assignedcount < $fullsize && $iteractions < 1000);
 
         // Assign free technologies when randomly was not assigned in minimus interactions.
-        foreach($free as $key => $one) {
+        foreach ($free as $key => $one) {
             if (!$one) {
                 continue;
             }
@@ -1130,28 +1369,44 @@ class SmartCityData {
 
     public function calculateResources($actions, $resourcesbylevel) {
 
-        foreach($actions as $action) {
+        foreach ($actions as $action) {
             $actiondata = $this->actionsbyid[$action->id];
 
-            foreach($actiondata->resources as $key => $resource) {
+            foreach ($actiondata->resources as $key => $resource) {
                 $resourcesbylevel[$resource->type] -= $resource->value;
             }
         }
 
-        return $resourcesbylevel;
+        $res = array();
+        foreach ($resourcesbylevel as $key => $value) {
+            $one = new \stdClass();
+            $one->type = $key;
+            $one->value = $value;
+            $res[] = $one;
+        }
+
+        return $res;
     }
 
     public function calculateTechResources($techs, $resourcesbylevel) {
 
-        foreach($techs as $tech) {
+        foreach ($techs as $tech) {
             $techdata = $this->technologiesbyid[$tech->id];
 
-            foreach($techdata->resources as $key => $resource) {
+            foreach ($techdata->resources as $key => $resource) {
                 $resourcesbylevel[$resource->type] -= $resource->value;
             }
         }
 
-        return $resourcesbylevel;
+        $res = array();
+        foreach ($resourcesbylevel as $key => $value) {
+            $one = new \stdClass();
+            $one->type = $key;
+            $one->value = $value;
+            $res[] = $one;
+        }
+
+        return $res;
     }
 
     public function isValidAction($actid) {
@@ -1162,6 +1417,21 @@ class SmartCityData {
         return isset($this->technologiesbyid[$techid]);
     }
 
+    public function isExpiredAction($action, $timeelapsed, $timelapse) {
+        $actdata = $this->actionsbyid[$action->id];
+
+        $endtime = $action->starttime + ($actdata->endtime * $timelapse);
+
+        return $endtime < $timeelapsed;
+    }
+
+    public function isExpiredTechnology($tech, $timeelapsed, $timelapse) {
+        $techdata = $this->technologiesbyid[$tech->id];
+
+        $endtime = $tech->starttime + ($techdata->endtime * $timelapse);
+
+        return $endtime < $timeelapsed;
+    }
 }
 
 class SmartCityTimecontrol {
@@ -1172,26 +1442,27 @@ class SmartCityTimecontrol {
 
     public $timeelapsed = 0;
 
-    public $lastcalc = 0;
-
     public $lastmeasured = 0;
+
+    // Last time when the elapsed was saved.
+    public $lastcalc = 0;
 
     public function __construct($jsondata = '') {
 
         if (!empty($jsondata)) {
             $data = json_decode($jsondata);
 
-            foreach($data as $field => $value) {
+            foreach ($data as $field => $value) {
                 $this->$field = $value;
             }
         }
     }
 
-    public static function time1xToX($x, $time) {
+    public static function time1xToX($time, $x) {
         return $time / pow(2, ($x - 1));
     }
 
-    public static function timeXTo1x($x, $time) {
+    public static function timeXTo1x($time, $x) {
         return $time * pow(2, ($x - 1));
     }
 

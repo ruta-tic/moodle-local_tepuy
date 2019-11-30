@@ -52,8 +52,8 @@ $string['notrunningtech'] = 'Technology not running';
 $string['crontask'] = 'Tepuy cron';
 $string['components_socket_cronuri'] = 'Cron URI to component -socket-';
 $string['components_socket_cronuri_desc'] = 'Something like ws://localhost:1234?skey=XXXXXXXXXXXXXXXXXXXXXXXXX';
+$string['techrunningrequired'] = 'Technology is required by a running action';
 $string[''] = '';
-
 
 // Original chat system messages
 $string['messagebeepseveryone'] = '{$a} beeps everyone!';
@@ -83,3 +83,5 @@ $string['messageactionsc_technologycompleted'] = 'An technology was completed';
 $string['messageactionsc_gameover'] = 'Gameover';
 $string['messageactionendtechnology'] = 'Technology -{$a}- has finished';
 $string['messageactionendaction'] = 'Action -{$a}- has finished';
+$string['messageactiongameover'] = 'The game was over manually by {$a}';
+$string['messageactionautogameover'] = 'The game was over';

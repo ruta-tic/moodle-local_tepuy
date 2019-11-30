@@ -14,12 +14,13 @@ class SocketSessions {
     private static $_settings = array();
     private static $_settingsbyuid = array();
 
-    public static function addConnection($conn, $sess) {
+    public static function addConnection($conn, $sess, $iscron = false) {
 
         if (!isset(self::$_sessions[$sess->uid])) {
             self::$_sessions[$sess->uid] = new \stdClass();
             self::$_sessions[$sess->uid]->clients = new \SplObjectStorage;
             self::$_sessions[$sess->uid]->skeys = array();
+            self::$_sessions[$sess->uid]->crons = array();
         }
 
         self::$_resources[$conn->resourceId] = $sess->uid;
@@ -27,6 +28,10 @@ class SocketSessions {
         // Store the new connection to send messages to later
         self::$_sessions[$sess->uid]->clients->attach($conn);
         self::$_sessions[$sess->uid]->skeys[$conn->resourceId] = $sess;
+
+        if ($iscron) {
+            self::$_sessions[$sess->uid]->crons[$conn->resourceId] = true;
+        }
     }
 
     public static function rmConnection($conn) {
@@ -38,6 +43,12 @@ class SocketSessions {
         if (isset(self::$_resources[$conn->resourceId])) {
             unset(self::$_resources[$conn->resourceId]);
         }
+
+        if (isset($session->crons[$conn->resourceId])) {
+            unset($session->crons[$conn->resourceId]);
+        }
+
+
     }
 
     public static function isActiveSessKey($id) {
@@ -47,6 +58,11 @@ class SocketSessions {
         }
 
         return isset($session->skeys[$id]);
+    }
+
+    public static function isCron($id) {
+        $session = self::getByResourceId($id);
+        return isset($session->crons[$id]);
     }
 
     public static function countClients($id) {
