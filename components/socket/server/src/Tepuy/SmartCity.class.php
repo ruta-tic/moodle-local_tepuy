@@ -606,46 +606,26 @@ class SmartCity {
     }
 
     public function gameover() {
-        global $DB;
 
         $goodend = $this->summary->timecontrol->starttime + ($this->_level->timelapse * $this->level->lapses);
-        $goodend = SmartCityTimecontrol::time1xToX($goodend, $this->summary->timecontrol->timeframe);
 
         $end = $this->summary->timecontrol->starttime + $this->getTimeelapsed() + $this->estimateEndScore();
-        $end = SmartCityTimecontrol::time1xToX($end, $this->summary->timecontrol->timeframe);
 
         $result = $end < $goodend ? self::STATE_FAILED : self::STATE_PASSED;
 
-        $current = $this->currentGame();
-        $current->state = $result;
-
-        $availableyet = false;
-        foreach($this->summary->games as $game) {
-            if ($game->state == self::STATE_LOCKED) {
-                $availableyet = true;
-                break;
-            }
-        }
-
-        $params = array();
-
-        // If not more games available.
-        if (!$availableyet) {
-            $params['state'] = self::STATE_ENDED;
-        }
-
-        $params['games'] = json_encode($this->summary->games);
-
-        $DB->update_record('local_tepuy_gamesmartcity', $params);
-
-        return $result;
+        return $this->closeGame($result);
     }
 
-    public function autoGameover($reason) {
+    public function closeGame($result) {
         global $DB;
 
         $current = $this->currentGame();
-        $current->state = $reason;
+
+        if (!$current) {
+            return false;
+        }
+
+        $current->state = $result;
 
         $available = false;
         foreach($this->summary->games as $game) {
@@ -656,7 +636,7 @@ class SmartCity {
         }
 
         $params = array();
-        $params['id'] = $current->id;
+        $params['id'] = $this->summary->id;
 
         // If not more games available.
         if (!$available) {
@@ -804,7 +784,7 @@ class SmartCity {
         $estimatelapse = $this->estimateCurrentLapse();
 
         $changehealth = false;
-        while ($this->_currentlapse->lapse < $estimatelapse) {
+        while ($this->_currentlapse->lapse < $estimatelapse && $this->_currentlapse->lapse < $this->_level->lapses) {
 
             // The actions are processed and the new lapse is created.
             $newlapse = new \stdClass();
@@ -877,11 +857,6 @@ class SmartCity {
             $data->reducer = $newlapse->reducer;
             $data->timemodify = $newlapse->timemodify;
 
-            echo "\n======================================\n";
-            var_dump($newlapse);
-            var_dump($data);
-            echo "\n======================================\n";
-
             // Insert the calculated lapse.
             $newlapse->id = $DB->insert_record('local_tepuy_gamesmartcity_lapses', $data, true);
             $this->_currentlapse = $newlapse;
@@ -941,7 +916,7 @@ class SmartCity {
 
             // Check ending reasons.
             if ($newlapse->score <= 0) {
-                $this->autoGameover(self::STATE_FAILED);
+                $this->closeGame(self::STATE_FAILED);
 
                 $requestdata = array(
                         'reason' => self::STATE_FAILED,
@@ -949,8 +924,11 @@ class SmartCity {
                     );
                 $cronparent->sc_autogameover((object)$requestdata);
 
+                // Gameover - End the cicle.
+                break;
+
             } else if ($this->_currentlapse->lapse == $this->_level->lapses) {
-                $this->autoGameover(self::STATE_PASSED);
+                $this->closeGame(self::STATE_PASSED);
 
                 $requestdata = array(
                         'reason' => self::STATE_PASSED,
@@ -958,6 +936,8 @@ class SmartCity {
                     );
                 $cronparent->sc_autogameover((object)$requestdata);
 
+                // Gameover - End the cicle.
+                break;
             }
 
         }
@@ -1027,15 +1007,15 @@ class SmartCity {
         }
 
         $R = $this->_currentlapse->score;
-        echo "R: ";
-        var_dump($R);
-        echo "\n";
+// //         echo "R: ";
+// //         var_dump($R);
+// //         echo "\n";
 
         // $D is the depreciation value.
         $D = 100 / $this->_level->lapses;
-        echo "D: ";
-        var_dump($D);
-        echo "\n";
+// //         echo "D: ";
+// //         var_dump($D);
+// //         echo "\n";
 
         $profit = array();
         foreach ($this->_level->zones as $key => $value) {
@@ -1057,23 +1037,22 @@ class SmartCity {
                 $profit[$m] += $value;
             }
         }
-        echo "P: ";
-        var_dump($profit);
-        echo "\n";
-
+// //         echo "P: ";
+// //         var_dump($profit);
+// //         echo "\n";
 
 
         // $FC is the consumption factor.
         $FC = $this->getConsumptionFactor($profit, $this->_currentlapse->reducer, $numberactions);
-        echo "FC: ";
-        var_dump($FC);
-        echo "\n";
+// //         echo "FC: ";
+// //         var_dump($FC);
+// //         echo "\n";
 
         // ($D * $FC) is the current monthly consum.
         $end = ($R / ($D * $FC)) * $this->_level->timelapse;
-        echo "End: ";
-        var_dump($end);
-        echo "\n";
+// //         echo "End: ";
+// //         var_dump($end);
+// //         echo "\n";
 
         return $end;
     }
@@ -1116,9 +1095,9 @@ class SmartCity {
         $Ex = 0;
 
         $DF = $DFp === null ? 0 : $this->calcDiscontent($DFp, $NA);
-        echo "DF: ";
-        var_dump($DF);
-        echo "\n";
+// //         echo "DF: ";
+// //         var_dump($DF);
+// //         echo "\n";
 
         foreach ($P as $key => $value) {
 

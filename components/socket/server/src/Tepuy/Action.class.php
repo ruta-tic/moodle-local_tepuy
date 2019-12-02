@@ -363,8 +363,13 @@ class Action {
         $processed = 0;
         foreach($matches as $match) {
             $game = new SmartCity($match->groupid);
-            $game->cron($this);
-            $processed++;
+
+            $activegame = $game->currentGame();
+
+            if($game->summary->state != SmartCity::STATE_ENDED && $activegame) {
+                $game->cron($this);
+                $processed++;
+            }
         }
 
         $res['SmartCity']->matches = $processed;
@@ -960,7 +965,7 @@ class Action {
 
         $params = array();
         $params['groupid'] = $requestdata->groupid;
-        $this->notifyActionToAll('actiongameover', false, $params);
+        $this->notifyActionToAll('actionautogameover', false, $params);
 
         return true;
     }
