@@ -318,11 +318,17 @@ class SmartCity {
         }
 
         $pos = 0;
+        $userfound = false;
         foreach ($this->summary->team as $member) {
             if ($userid == $member->id) {
+                $userfound = true;
                 break;
             }
             $pos++;
+        }
+
+        if (!$userfound) {
+            throw new ByCodeException('usernotintogroup');
         }
 
         $res->available = $this->_currentgame->actions[$pos];

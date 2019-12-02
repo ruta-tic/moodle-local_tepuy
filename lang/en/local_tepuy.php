@@ -53,7 +53,7 @@ $string['crontask'] = 'Tepuy cron';
 $string['components_socket_cronuri'] = 'Cron URI to component -socket-';
 $string['components_socket_cronuri_desc'] = 'Something like ws://localhost:1234?skey=XXXXXXXXXXXXXXXXXXXXXXXXX';
 $string['techrunningrequired'] = 'Technology is required by a running action';
-$string[''] = '';
+$string['usernotintogroup'] = 'User not into group';
 
 // Original chat system messages
 $string['messagebeepseveryone'] = '{$a} beeps everyone!';
