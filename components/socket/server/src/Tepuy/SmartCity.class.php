@@ -98,7 +98,7 @@ class SmartCity {
             }
 
         } else {
-            $this->_level = SmartCityLevels::$LEVELS[SmartCityLevels::DEFAULT];
+            $this->_level = SmartCityLevels::$LEVELS[SmartCityLevels::DEFAULTLEVEL];
         }
     }
 
@@ -154,7 +154,7 @@ class SmartCity {
             $newgame->id = $i;
             $newgame->state = self::STATE_LOCKED;
             $newgame->score = 0;
-            $newgame->level = SmartCityLevels::DEFAULT;
+            $newgame->level = SmartCityLevels::DEFAULTLEVEL;
             $newgame->actions = $actions;
             $newgame->technologies = $techs;
             $games[] = $newgame;
@@ -183,7 +183,7 @@ class SmartCity {
         }
 
         if (!SmartCityLevels::isValid($level)) {
-            $level = SmartCityLevels::DEFAULT;
+            $level = SmartCityLevels::DEFAULTLEVEL;
         }
 
         $this->summary->timecontrol = new SmartCityTimecontrol();
@@ -1176,7 +1176,7 @@ class SmartCity {
 class SmartCityLevels {
 
     public static $LEVELS = array();
-    public const DEFAULT = 1;
+    const DEFAULTLEVEL = 1;
 
     // Levels data.
     public static function initLevels() {
