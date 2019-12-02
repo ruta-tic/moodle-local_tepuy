@@ -293,9 +293,18 @@ class SmartCity {
 
         $lifetime = SmartCityTimecontrol::time1xToX($this->estimateEndScore(), $this->summary->timecontrol->timeframe);
 
-        $res->lifetime = round($lifetime);
+        $res->lifetime = $this->getLifetime();
 
         return $res;
+    }
+
+    public function getLifetime() {
+
+        $lifetime = $this->estimateEndScore() - ($this->getTimeelapsed() % $this->_level->timelapse);
+
+        $lifetime = SmartCityTimecontrol::time1xToX($lifetime, $this->summary->timecontrol->timeframe);
+
+        return round($lifetime);
     }
 
     /**
@@ -613,13 +622,21 @@ class SmartCity {
 
     public function gameover() {
 
-        $goodend = $this->summary->timecontrol->starttime + ($this->_level->timelapse * $this->level->lapses);
+        $goodend = $this->_level->timelapse * $this->_level->lapses;
 
-        $end = $this->summary->timecontrol->starttime + $this->getTimeelapsed() + $this->estimateEndScore();
+        $end = $this->getTimeelapsed() + $this->getLifetime();
 
         $result = $end < $goodend ? self::STATE_FAILED : self::STATE_PASSED;
 
-        return $this->closeGame($result);
+        $this->closeGame($result);
+
+        $endlapse = floor($end / $this->_level->timelapse);
+
+        $res = new \stdclass();
+        $res->reason = $result;
+        $res->endlapse = $endlapse;
+
+        return $res;
     }
 
     public function closeGame($result) {
@@ -739,18 +756,22 @@ class SmartCity {
         $act = self::$_data->actionsbyid[$actid];
         $runningtechs = $this->_currentrunning->technologies;
 
+        if (count($act->technologies) == 0) {
+            return true;
+        }
+
+        $available = false;
         foreach ($act->technologies as $tech) {
-            $available = false;
             foreach ($runningtechs as $running) {
                 if ($running->id == $tech) {
                     $available = true;
                     break;
                 }
             }
+        }
 
-            if (!$available) {
-                return false;
-            }
+        if (!$available) {
+            return false;
         }
 
         return true;
@@ -801,7 +822,7 @@ class SmartCity {
             // Initialize lapse profit array.
             $profit = array();
             foreach ($this->_level->zones as $key => $value) {
-                $profit[$key] = $value;
+                $profit[$key] = 0;
             }
 
             $newresources = 0;
@@ -837,11 +858,6 @@ class SmartCity {
                 }
             }
 
-            foreach ($this->_currentlapse->zones as $zone) {
-                $zone->value = round($profit[$zone->zone], 2);
-            }
-
-            $newlapse->zones = $this->_currentlapse->zones;
             $newlapse->newresources = $newresources;
 
             $newlapse->score = $this->calcResources($newlapse->newresources,
@@ -851,6 +867,14 @@ class SmartCity {
                                                     $numberactions);
 
             $newlapse->reducer = $this->calcDiscontent($this->_currentlapse->reducer, $numberactions);
+
+            foreach ($this->_currentlapse->zones as $zone) {
+                $value = $this->_level->zones[$zone->zone] + round($profit[$zone->zone], 2);
+                $value = $value < 0 ? 0 : ($value > 1 ? 1 : $value);
+                $zone->value = $value - $newlapse->reducer;
+            }
+
+            $newlapse->zones = $this->_currentlapse->zones;
             $newlapse->timemodify = time();
 
             $data = new \stdClass();
@@ -1013,15 +1037,9 @@ class SmartCity {
         }
 
         $R = $this->_currentlapse->score;
-// //         echo "R: ";
-// //         var_dump($R);
-// //         echo "\n";
 
         // $D is the depreciation value.
         $D = 100 / $this->_level->lapses;
-// //         echo "D: ";
-// //         var_dump($D);
-// //         echo "\n";
 
         $profit = array();
         foreach ($this->_level->zones as $key => $value) {
@@ -1043,22 +1061,12 @@ class SmartCity {
                 $profit[$m] += $value;
             }
         }
-// //         echo "P: ";
-// //         var_dump($profit);
-// //         echo "\n";
-
 
         // $FC is the consumption factor.
         $FC = $this->getConsumptionFactor($profit, $this->_currentlapse->reducer, $numberactions);
-// //         echo "FC: ";
-// //         var_dump($FC);
-// //         echo "\n";
 
         // ($D * $FC) is the current monthly consum.
         $end = ($R / ($D * $FC)) * $this->_level->timelapse;
-// //         echo "End: ";
-// //         var_dump($end);
-// //         echo "\n";
 
         return $end;
     }
@@ -1075,14 +1083,27 @@ class SmartCity {
      *
      */
     private function calcResources($NR, $l, $P, $DFp, $NA) {
+// //          echo "P: ";
+// //          var_dump($P);
+// //          echo "\n";
 
         // Resources in previous period.
         $prevlapse = $this->getLapse($l - 1);
 
         // $D is the depreciation value.
         $D = 100 / $this->_level->lapses;
+// //          echo "D: ";
+// //          var_dump($D);
+// //          echo "\n";
+// //
+// //          echo "DFp: ";
+// //          var_dump($DFp);
+// //          echo "\n";
 
         $FC = $this->getConsumptionFactor($P, $DFp, $NA);
+// //          echo "FC: ";
+// //          var_dump($FC);
+// //          echo "\n";
 
 
         if ($prevlapse) {
@@ -1092,6 +1113,9 @@ class SmartCity {
         }
 
         $R = $R0 - $D * $FC + $NR;
+// //          echo "R: ";
+// //          var_dump($R);
+// //          echo "\n";
 
         return $R;
 
@@ -1100,19 +1124,23 @@ class SmartCity {
     private function getConsumptionFactor($P, $DFp, $NA) {
         $Ex = 0;
 
-        $DF = $DFp === null ? 0 : $this->calcDiscontent($DFp, $NA);
-// //         echo "DF: ";
-// //         var_dump($DF);
-// //         echo "\n";
+        $DFp = $DFp === null ? 0 : $DFp;
+// //          echo "DF: ";
+// //          var_dump($DFp);
+// //          echo "\n";
 
         foreach ($P as $key => $value) {
 
             $improvement = $this->_level->zones[$key] + $value;
             $maximprovement = ($improvement > 1 ? 1 : $improvement);
 
-            $Bx = ($maximprovement < 0 ? 0 : $maximprovement) - $DF;
+            $Bx = ($maximprovement < 0 ? 0 : $maximprovement) - $DFp;
+// //             echo $Bx . '*';
             $Ex += 1 - $Bx;
         }
+// //          echo "Ex: ";
+// //          var_dump($Ex);
+// //          echo "\n";
 
         $NC = count($P);
         return ($Ex * $this->_level->cr) / $NC;
@@ -1134,6 +1162,9 @@ class SmartCity {
         $minactions = 1 - ($NA / $this->_level->ea);
         $minactions = $minactions < 0 ? 0 : $minactions / $this->_level->ds;
 
+// //         echo "Descontento: ";
+// //         var_dump($minactions);
+// //          echo "\n";
         return $DFp + $minactions;
     }
 
@@ -1266,7 +1297,7 @@ class SmartCityData {
     public function getAssignableActions($slices) {
         $fullsize = count($this->actions);
 
-        // // Create an array with $fullsize positions. All numbers are evaluated as true in a boolean condition.
+        // Create an array with $fullsize positions. All numbers are evaluated as true in a boolean condition.
         $free = range(1, $fullsize);
         $assignedcount = 0;
 
@@ -1405,7 +1436,7 @@ class SmartCityData {
     public function isExpiredAction($action, $timeelapsed, $timelapse) {
         $actdata = $this->actionsbyid[$action->id];
 
-        $endtime = $action->starttime + ($actdata->endtime * $timelapse);
+        $endtime = $action->starttime + $actdata->endtime * $timelapse;
 
         return $endtime < $timeelapsed;
     }
@@ -1413,7 +1444,7 @@ class SmartCityData {
     public function isExpiredTechnology($tech, $timeelapsed, $timelapse) {
         $techdata = $this->technologiesbyid[$tech->id];
 
-        $endtime = $tech->starttime + ($techdata->endtime * $timelapse);
+        $endtime = $tech->starttime + $techdata->endtime * $timelapse;
 
         return $endtime < $timeelapsed;
     }

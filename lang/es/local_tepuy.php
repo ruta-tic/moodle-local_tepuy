@@ -83,4 +83,4 @@ $string['messageactionsc_technologycompleted'] = 'Una tecnología ha sido comple
 $string['messageactionsc_gameover'] = 'El juego ha sido finalizado manualmente por {$a}';
 $string['messageactionendtechnology'] = 'La tecnología -{$a}- ha finalizado';
 $string['messageactionendaction'] = 'La política -{$a}- ha finalizado';
-$string['messageactionautogameover'] = 'El juego a finalizado';
+$string['messageactionautogameover'] = 'El juego ha finalizado';

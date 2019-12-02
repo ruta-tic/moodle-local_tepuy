@@ -140,7 +140,7 @@
             "newresources": 0,
             "zones": [0, 0, 4, 3, 1, 0],
             "resources": [ { "type": "human", "value": 13 }, { "type": "physical", "value": 8 }, { "type": "energy", "value": 5 } ],
-            "technologies": ["t3"],
+            "technologies": [],
             "files": ["f2"] },
         {
             "id": "a14",
@@ -314,7 +314,7 @@
             "newresources": 0,
             "zones": [0, 0, 2, 0, 0, 2],
             "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 10 }, { "type": "energy", "value": 7 } ],
-            "technologies": ["t7"],
+            "technologies": ["t4"],
             "files": ["f4"] },
         {
             "id": "a30",
@@ -335,7 +335,7 @@
             "newresources": 0,
             "zones": [0, 0, 0, 0, 5, 0],
             "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 5 }, { "type": "energy", "value": 6 } ],
-            "technologies": ["t9"],
+            "technologies": [],
             "files": ["f5"] },
         {
             "id": "a32",
@@ -345,7 +345,7 @@
             "newresources": 0,
             "zones": [0, 5, 0, 0, 0, 0],
             "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 5 }, { "type": "energy", "value": 6 } ],
-            "technologies": ["t10"],
+            "technologies": [],
             "files": ["f6"] },
         {
             "id": "a33",
@@ -355,7 +355,7 @@
             "newresources": 0,
             "zones": [5, 0, 0, 0, 0, 0],
             "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 5 }, { "type": "energy", "value": 6 } ],
-            "technologies": ["t11"],
+            "technologies": [],
             "files": ["f7"] },
         {
             "id": "a34",
@@ -365,7 +365,7 @@
             "newresources": 0,
             "zones": [0, 0, 0, 0, 0, 5],
             "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 5 }, { "type": "energy", "value": 6 } ],
-            "technologies": ["t12"],
+            "technologies": [],
             "files": ["f8"] },
         {
             "id": "a35",
@@ -375,7 +375,7 @@
             "newresources": 0,
             "zones": [0, 0, 5, 0, 0, 0],
             "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 5 }, { "type": "energy", "value": 6 } ],
-            "technologies": ["t13"],
+            "technologies": [],
             "files": ["f9"] },
         {
             "id": "a36",
@@ -385,7 +385,7 @@
             "newresources": 0,
             "zones": [0, 0, 0, 5, 0, 0],
             "resources": [ { "type": "human", "value": 5 }, { "type": "physical", "value": 5 }, { "type": "energy", "value": 6 } ],
-            "technologies": ["t14"],
+            "technologies": [],
             "files": ["f10"] },
         {
             "id": "a37",
@@ -461,7 +461,7 @@
             "newresources": 0,
             "zones": [2, 0, 0, 0, 5, 1],
             "resources": [ { "type": "human", "value": 12 }, { "type": "physical", "value": 12 }, { "type": "energy", "value": 10 } ],
-            "technologies": [],
+            "technologies": ["t4"],
             "files": ["f11"] },
         {
             "id": "a44",

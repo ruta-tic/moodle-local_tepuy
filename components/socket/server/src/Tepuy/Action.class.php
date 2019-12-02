@@ -582,6 +582,7 @@ class Action {
             $data = new \stdClass();
             $data->timeframe = $this->request->data->timeframe;
             $data->duedate = $game->getDuedate();
+            $data->lifetime = $game->getLifetime();
 
             $msg = $this->getResponse($data);
             $msg = json_encode($msg);
@@ -811,7 +812,8 @@ class Action {
 
         if ($ended) {
             $data = new \stdClass();
-            $data->reason = $ended;
+            $data->reason = $ended->reason;
+            $data->endlapse = $ended->endlapse;
 
             $msg = $this->getResponse($data);
             $msg = json_encode($msg);
@@ -824,7 +826,7 @@ class Action {
                 }
             }
 
-            Logging::trace(Logging::LVL_DETAIL, 'Gameover: ' . $ended);
+            Logging::trace(Logging::LVL_DETAIL, 'Gameover: ' . $ended->reason);
             $this->notifyActionToAll();
         }
 
