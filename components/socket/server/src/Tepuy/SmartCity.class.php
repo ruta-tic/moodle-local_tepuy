@@ -949,6 +949,7 @@ class SmartCity {
 
 
             $requestdata = array(
+                    'score' => round($newlapse->score),
                     'lapse' => $newlapse->lapse,
                     'lifetime' => $this->getLifetime(),
                     'groupid' => $this->groupid
@@ -960,6 +961,7 @@ class SmartCity {
                 $this->closeGame(self::STATE_FAILED);
 
                 $requestdata = array(
+                        'endlapse' => $newlapse->lapse,
                         'reason' => self::STATE_FAILED,
                         'groupid' => $this->groupid
                     );
@@ -1271,7 +1273,7 @@ class SmartCityLevel {
 
     // Constant of reality.
     // [2, 3, 4] = [easy, medium, hard]
-    public $cr = 2;
+    public $cr = 2.5;
 
     // Minimum expected actions.
     public $ea = 7;

@@ -926,6 +926,7 @@ class Action {
         $data = new \stdClass();
         $data->lapse = $requestdata->lapse;
         $data->lifetime = $requestdata->lifetime;
+        $data->score = $requestdata->score;
 
         $msg = $this->getResponse($data, 'sc_lapsechanged');
         $msg = json_encode($msg);
@@ -951,6 +952,7 @@ class Action {
 
         $data = new \stdClass();
         $data->reason = $requestdata->reason;
+        $data->endlapse = $requestdata->endlapse;
 
         $msg = $this->getResponse($data, 'sc_gameover');
         $msg = json_encode($msg);
