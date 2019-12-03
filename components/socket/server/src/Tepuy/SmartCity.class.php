@@ -724,10 +724,15 @@ class SmartCity {
         // $params is not used into server side validation. The validation is with existing files.
 
         $tech = self::$_data->technologiesbyid[$techid];
-        $files = $this->getFiles();
+        $currentfiles = $this->getFiles();
+
+        $arrayfiles = array();
+        foreach($currentfiles as $file) {
+            $arrayfiles[] = $file->id;
+        }
 
         foreach ($tech->files->in as $file) {
-            if (!in_array($file, $files)) {
+            if (!in_array($file, $arrayfiles)) {
                 return false;
             }
         }
@@ -742,8 +747,13 @@ class SmartCity {
         $act = self::$_data->actionsbyid[$actid];
         $currentfiles = $this->getFiles();
 
+        $arrayfiles = array();
+        foreach($currentfiles as $file) {
+            $arrayfiles[] = $file->id;
+        }
+
         foreach ($act->files as $file) {
-            if (!in_array($file, $currentfiles)) {
+            if (!in_array($file, $arrayfiles)) {
                 return false;
             }
         }
