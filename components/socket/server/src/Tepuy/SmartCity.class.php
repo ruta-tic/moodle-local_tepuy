@@ -879,9 +879,10 @@ class SmartCity {
             $newlapse->reducer = $this->calcDiscontent($this->_currentlapse->reducer, $numberactions);
 
             foreach ($this->_currentlapse->zones as $zone) {
-                $value = $this->_level->zones[$zone->zone] + round($profit[$zone->zone], 2);
+                $value = $profit[$zone->zone];
+                $value = $zone->value + $value - ($newlapse->reducer - $this->_currentlapse->reducer);
                 $value = $value < 0 ? 0 : ($value > 1 ? 1 : $value);
-                $zone->value = $value - $newlapse->reducer;
+                $zone->value = round($value, 2);
             }
 
             $newlapse->zones = $this->_currentlapse->zones;
