@@ -950,6 +950,7 @@ class SmartCity {
 
             $requestdata = array(
                     'lapse' => $newlapse->lapse,
+                    'lifetime' => $this->getLifetime(),
                     'groupid' => $this->groupid
                 );
             $cronparent->sc_lapsechanged((object)$requestdata);

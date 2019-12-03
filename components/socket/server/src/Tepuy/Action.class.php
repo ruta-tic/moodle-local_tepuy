@@ -925,6 +925,7 @@ class Action {
 
         $data = new \stdClass();
         $data->lapse = $requestdata->lapse;
+        $data->lifetime = $requestdata->lifetime;
 
         $msg = $this->getResponse($data, 'sc_lapsechanged');
         $msg = json_encode($msg);
