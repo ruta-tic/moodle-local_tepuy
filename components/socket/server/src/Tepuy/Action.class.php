@@ -104,21 +104,14 @@ class Action {
             return false;
         }
 
-        //A Moodle action to save a chat message.
-        $msgid = chat_send_chatmessage($chatuser, $this->request->data, $this->request->issystem);
-
         $data = new \stdClass();
-        $data->id = $msgid;
-        $data->user = new \stdClass();
-        $data->user->id = $this->user->id;
-        $data->user->name = $this->user->firstname;
-        $data->timestamp = time();
-        $data->issystem = $this->request->issystem ? 1 : 0;
+        $moodlemsg = '';
 
         if ($this->request->issystem) {
             if (strpos($this->request->data, 'action') === 0) {
                 if ($params && isset($params['lang'])) {
                     $a = $params['lang'];
+                    $moodlemsg = $this->request->data . '|' . $a;
                 } else {
                     $a = $this->user->firstname;
                 }
@@ -131,6 +124,20 @@ class Action {
         } else {
             $data->msg = $this->request->data;
         }
+
+        if (empty($moodlemsg)) {
+            $moodlemsg = $this->request->data;
+        }
+
+        //A Moodle action to save a chat message.
+        $msgid = chat_send_chatmessage($chatuser, $moodlemsg, $this->request->issystem);
+
+        $data->id = $msgid;
+        $data->user = new \stdClass();
+        $data->user->id = $this->user->id;
+        $data->user->name = $this->user->firstname;
+        $data->timestamp = time();
+        $data->issystem = $this->request->issystem ? 1 : 0;
 
         $msg = $this->getResponse($data);
         $msg = json_encode($msg);
@@ -192,7 +199,14 @@ class Action {
 
                 if ($msg->issystem) {
                     if (strpos($one->message, 'action') === 0) {
-                        $msg->msg = get_string('message' . $one->message, 'local_tepuy', $one->firstname) . '';
+
+                        if (strpos($one->message, '|') > 0) {
+                            $parts = explode('|', $one->message);
+                            $msg->msg = get_string('message' . $parts[0], 'local_tepuy', $parts[1]) . '';
+                        } else {
+                            $msg->msg = get_string('message' . $one->message, 'local_tepuy', $one->firstname) . '';
+                        }
+
                     } else if (in_array($one->message, array('beepseveryone', 'beepsyou', 'enter', 'exit', 'youbeep'))) {
                         $msg->msg = get_string('message' . $one->message, 'mod_chat', $one->firstname);
                     }
