@@ -52,15 +52,20 @@ class cron_tepuy extends \core\task\scheduled_task {
         $uris = explode("\n", $config->components_socket_cronuri);
 
         foreach ($uris as $uri) {
-            $to = strpos($uri, '?');
-            $to = $to === false ? strlen($uri) : $to;
-            $publicuri = substr($uri, 0, $to);
-            mtrace('Calling URI: ' . $publicuri);
+            $uri = trim($uri);
 
-            $client = new \WebSocket\Client(trim($uri) . '&cron=true');
-            $client->send('{"action": "execron" }');
+            if (!empty($uri)) {
+                $to = strpos($uri, '?');
+                $to = $to === false ? strlen($uri) : $to;
+                $publicuri = substr($uri, 0, $to);
 
-            mtrace('Response: ' . $client->receive());
+                mtrace('Calling URI: ' . $publicuri);
+
+                $client = new \WebSocket\Client($uri . '&cron=true');
+                $client->send('{"action": "execron" }');
+
+                mtrace('Response: ' . $client->receive());
+            }
         }
     }
 

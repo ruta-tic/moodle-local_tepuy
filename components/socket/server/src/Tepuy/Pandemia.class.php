@@ -1245,12 +1245,14 @@ class PandemiaLevels {
         self::$LEVELS[0] = new PandemiaLevel();
 
         $level = new PandemiaLevel();
+        $level->score = 89;
         $level->level = 1;
         $level->cr = 4;
         $level->ea = 6;
         self::$LEVELS[1] = $level;
 
         $level = new PandemiaLevel();
+        $level->score = 85;
         $level->level = 2;
         $level->cr = 5;
         $level->ea = 7;
@@ -1266,7 +1268,7 @@ class PandemiaLevel {
 
     public $level = 0;
 
-    public $score = 89;
+    public $score = 99;
 
     public $lapses = 48;
 
