@@ -15,17 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Definition of component local_tepuy.
  *
- * @package   local_tepuy
- * @copyright 2019 David Herney - cirano
+ * @package local_tepuy
+ * @copyright  2019 David Herney - cirano
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2019092605;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2018051700;        // Requires this Moodle version.
-$plugin->cron = 0;
-$plugin->release = 'Roraima';           // A special and big Tepuy.
-$plugin->component = 'local_tepuy';     // Full name of the plugin (used for diagnostics).
-$plugin->maturity = MATURITY_BETA;
+$tasks = array(
+    array(
+        'classname' => 'local_tepuy\task\cron_tepuy',
+        'blocking' => 0,
+        'minute' => '*/1',
+        'hour' => '*',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*'
+    )
+);

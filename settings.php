@@ -15,17 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Settings for local_tepuy.
  *
  * @package   local_tepuy
  * @copyright 2019 David Herney - cirano
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2019092605;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2018051700;        // Requires this Moodle version.
-$plugin->cron = 0;
-$plugin->release = 'Roraima';           // A special and big Tepuy.
-$plugin->component = 'local_tepuy';     // Full name of the plugin (used for diagnostics).
-$plugin->maturity = MATURITY_BETA;
+if ($hassiteconfig) {
+    $settings = new admin_settingpage('local_tepuy', get_string('pluginname', 'local_tepuy'));
+
+    $name = 'components_socket_cronuri';
+    $title = get_string($name, 'local_tepuy');
+    $description = get_string($name.'_desc', 'local_tepuy');
+    $setting = new admin_setting_configtextarea('local_tepuy/' . $name, $title, $description, 'ws://localhost:1234/skey=');
+    $settings->add($setting);
+
+    $ADMIN->add('localplugins', $settings);
+}

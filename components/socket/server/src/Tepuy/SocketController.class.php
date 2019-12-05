@@ -13,6 +13,13 @@ use Tepuy\SocketSessions;
 class SocketController implements MessageComponentInterface {
 
     public function __construct() {
+        global $DB;
+
+        if (!$settings = $DB->get_records('local_tepuy_settings')) {
+            throw new \Exception(get_string('settingsnotfound', 'local_tepuy'));
+        }
+
+        SocketSessions::setSettings($settings);
     }
 
     public function onOpen(ConnectionInterface $conn) {
@@ -25,6 +32,8 @@ class SocketController implements MessageComponentInterface {
             Messages::error('skeyrequired', null, $conn, true);
         }
 
+        $iscron = !empty($params['cron']);
+
         if (!$sess = $DB->get_record('local_tepuy_socket_sessions', array('skey' => $params['skey']))) {
             Messages::error('invalidkey', null, $conn, true);
         }
@@ -32,15 +41,17 @@ class SocketController implements MessageComponentInterface {
         $sess->lastping = time();
         $DB->update_record('local_tepuy_socket_sessions', $sess);
 
-        SocketSessions::addConnection($conn, $sess);
+        SocketSessions::addConnection($conn, $sess, $iscron);
 
-        Logging::trace(Logging::LVL_ALL, "New connection! ({$conn->resourceId})");
+        if (!$iscron) {
+            Logging::trace(Logging::LVL_ALL, "New connection! ({$conn->resourceId})");
 
-        $data = new \stdClass();
-        $data->action = 'playerconnected';
+            $data = new \stdClass();
+            $data->action = 'playerconnected';
 
-        $action = new Action($this, $conn, $data);
-        $action->run();
+            $action = new Action($conn, $data);
+            $action->run();
+        }
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
@@ -60,32 +71,41 @@ class SocketController implements MessageComponentInterface {
             Messages::error('actionrequired', null, $from);
         }
 
-        $action = new Action($this, $from, $json);
+        $action = new Action($from, $json);
         $action->run();
     }
 
     public function onClose(ConnectionInterface $conn) {
+
+        $iscron = SocketSessions::isCron($conn->resourceId);
+
         // The connection is closed, remove it, as we can no longer send it messages
         SocketSessions::rmConnection($conn);
 
         Action::customUnset($conn);
 
-        Logging::trace(Logging::LVL_ALL, "Connection {$conn->resourceId} has disconnected");
+        if ($iscron) {
+        } else {
 
-        $data = new \stdClass();
-        $data->action = 'playerdisconnected';
+            Logging::trace(Logging::LVL_ALL, "Connection {$conn->resourceId} has disconnected");
 
-        if (SocketSessions::isActiveSessKey($conn->resourceId)) {
-            $action = new Action($this, $conn, $data);
-            $action->run();
+            $data = new \stdClass();
+            $data->action = 'playerdisconnected';
+
+            if (SocketSessions::isActiveSessKey($conn->resourceId)) {
+                $action = new Action($conn, $data);
+                $action->run();
+            }
         }
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) {
 
         Logging::trace(Logging::LVL_ALL, "An error has occurred: {$e->getMessage()}");
+        Logging::trace(Logging::LVL_DEBUG, "Trace: {$e->getTraceAsString()}");
 
         if (get_class($e) == 'dml_read_exception') {
+
 
             // Destroy the global DB Moodle variable in order to rebuild it.
             unset($GLOBALS['DB']);

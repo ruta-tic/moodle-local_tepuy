@@ -42,6 +42,18 @@ $string['typenotallowed'] = 'Current user can\'t play this card type';
 $string['carddontplayed'] = 'Card don\'t played';
 $string['notmembersingroup'] = 'Not members in group {$a}';
 $string['restardbconnection'] = 'The DB connection was restarted';
+$string['fieldrequired'] = 'The field {$a} is required.';
+$string['errorgamestart'] = 'A game is active currently';
+$string['notrequiredfiles'] = 'Current game does not have the required files';
+$string['notrequiredtechnologies'] = 'Current game does not have the required technologies';
+$string['notresources'] = 'Current game does not have resources to it';
+$string['notrunningaction'] = 'Action not running';
+$string['notrunningtech'] = 'Technology not running';
+$string['crontask'] = 'Tepuy cron';
+$string['components_socket_cronuri'] = 'Cron URI to component -socket-';
+$string['components_socket_cronuri_desc'] = 'Something like ws://localhost:1234?skey=XXXXXXXXXXXXXXXXXXXXXXXXX';
+$string['techrunningrequired'] = 'Technology is required by a running action';
+$string['usernotintogroup'] = 'User not into group';
 
 // Original chat system messages
 $string['messagebeepseveryone'] = '{$a} beeps everyone!';
@@ -60,3 +72,25 @@ $string['messageactioncasefailed'] = 'Case failed';
 $string['messageactioncasepassed'] = 'Case passed';
 $string['messageactionattemptfailed'] = 'Attempt failed';
 $string['messageactionattemptpassed'] = 'Attempt successfully approved';
+$string['messageactionendtechnology'] = 'Technology -{$a}- has finished';
+$string['messageactionendaction'] = 'Action -{$a}- has finished';
+$string['messageactionautogameover'] = 'The game was over';
+$string['messageactioncron_actioncompleted'] = 'An action was completed';
+$string['messageactioncron_technologycompleted'] = 'An technology was completed';
+$string['messageactioncron_autogameover'] = 'The game was over';
+
+$string['messageactionsc_gamestart'] = '{$a} has started the game';
+$string['messageactionsc_changetimeframe'] = '{$a} has changed the timeframe';
+$string['messageactionsc_playaction'] = '{$a} has played an action';
+$string['messageactionsc_playtechnology'] = '{$a} has played a technology';
+$string['messageactionsc_stopaction'] = '{$a} has stoped an action';
+$string['messageactionsc_stoptechnology'] = '{$a} has stoped a technology';
+$string['messageactionsc_gameover'] = 'The game was over manually by {$a}';
+
+$string['messageactionp_gamestart'] = '{$a} has started the game';
+$string['messageactionp_changetimeframe'] = '{$a} has changed the timeframe';
+$string['messageactionp_playaction'] = '{$a} has played an action';
+$string['messageactionp_playtechnology'] = '{$a} has played a technology';
+$string['messageactionp_stopaction'] = '{$a} has stoped an action';
+$string['messageactionp_stoptechnology'] = '{$a} has stoped a technology';
+$string['messageactionp_gameover'] = 'The game was over manually by {$a}';

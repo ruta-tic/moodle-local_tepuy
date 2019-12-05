@@ -42,6 +42,18 @@ $string['typenotallowed'] = 'El usuario actual no puede jugar este tipo de carta
 $string['carddontplayed'] = 'Carta no jugada';
 $string['notmembersingroup'] = 'No hay miembros en el grupo {$a}';
 $string['restardbconnection'] = 'La conexión con la base de datos ha sido reiniciada';
+$string['fieldrequired'] = 'El campo {$a} es requerido.';
+$string['errorgamestart'] = 'Un juego está activo en este momento';
+$string['notrequiredfiles'] = 'El juego actual no cuenta con el archivo requerido';
+$string['notrequiredtechnologies'] = 'El juego actual no cuenta con la tecnología requerida';
+$string['notresources'] = 'El juego actual no tiene recursos para lo que se solicita';
+$string['notrunningaction'] = 'La política no está en ejecución';
+$string['notrunningtech'] = 'La tecnología no está en ejecución';
+$string['crontask'] = 'Tepuy cron';
+$string['components_socket_cronuri'] = 'URI del cron para el componente -socket-';
+$string['components_socket_cronuri_desc'] = 'Algo como ws://localhost:1234?skey=XXXXXXXXXXXXXXXXXXXXXXXXX';
+$string['techrunningrequired'] = 'Una tecnología es requerida para ejecutar esta política';
+$string['usernotintogroup'] = 'El usuario no se encontró en el grupo actual';
 
 // Original chat system messages
 $string['messagebeepseveryone'] = '{$a} envía un beep a todos';
@@ -60,3 +72,25 @@ $string['messageactioncasefailed'] = 'Caso fallido';
 $string['messageactioncasepassed'] = 'Caso aprobado';
 $string['messageactionattemptfailed'] = 'Intento fallido';
 $string['messageactionattemptpassed'] = 'Intento aprobado';
+$string['messageactionendtechnology'] = 'La tecnología -{$a}- ha finalizado';
+$string['messageactionendaction'] = 'La política -{$a}- ha finalizado';
+$string['messageactionautogameover'] = 'El juego ha finalizado';
+$string['messageactioncron_actioncompleted'] = 'Una política ha sido completada';
+$string['messageactioncron_technologycompleted'] = 'Una tecnología ha sido completada';
+$string['messageactioncron_autogameover'] = 'El juego ha finalizado';
+
+$string['messageactionsc_gamestart'] = '{$a} ha iniciado el juego';
+$string['messageactionsc_changetimeframe'] = '{$a} ha cambiado la velocidad del juego';
+$string['messageactionsc_playaction'] = '{$a} ha jugado una política';
+$string['messageactionsc_playtechnology'] = '{$a} ha jugado una tecnología';
+$string['messageactionsc_stopaction'] = '{$a} ha detenido una política';
+$string['messageactionsc_stoptechnology'] = '{$a} ha detenido una tecnología';
+$string['messageactionsc_gameover'] = 'El juego ha sido finalizado manualmente por {$a}';
+
+$string['messageactionp_gamestart'] = '{$a} ha iniciado el juego';
+$string['messageactionp_changetimeframe'] = '{$a} ha cambiado la velocidad del juego';
+$string['messageactionp_playaction'] = '{$a} ha jugado una política';
+$string['messageactionp_playtechnology'] = '{$a} ha jugado una tecnología';
+$string['messageactionp_stopaction'] = '{$a} ha detenido una política';
+$string['messageactionp_stoptechnology'] = '{$a} ha detenido una tecnología';
+$string['messageactionp_gameover'] = 'El juego ha sido finalizado manualmente por {$a}';
