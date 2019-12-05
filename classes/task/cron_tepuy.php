@@ -57,7 +57,7 @@ class cron_tepuy extends \core\task\scheduled_task {
             $publicuri = substr($uri, 0, $to);
             mtrace('Calling URI: ' . $publicuri);
 
-            $client = new \WebSocket\Client($uri . '&cron=true');
+            $client = new \WebSocket\Client(trim($uri) . '&cron=true');
             $client->send('{"action": "execron" }');
 
             mtrace('Response: ' . $client->receive());

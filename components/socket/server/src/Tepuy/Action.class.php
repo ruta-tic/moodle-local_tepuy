@@ -32,9 +32,13 @@ class Action {
     const AVAILABLES = array('chatmsg', 'chathistory', 'gamestate', 'playerconnected', 'playerdisconnected', 'execron',
                                 // Actions to GameAngi.
                                 'playcard', 'unplaycard', 'endcase',
-                                // Actions to Games SmartCity and Pandemia.
+                                // Actions to Games SmartCity.
                                 'sc_gamestart', 'sc_changetimeframe', 'sc_playaction', 'sc_playtechnology', 'sc_stopaction',
-                                'sc_stoptechnology', 'sc_gameover');
+                                'sc_stoptechnology', 'sc_gameover',
+
+                                // Actions to Games Pandemia.
+                                'p_gamestart', 'p_changetimeframe', 'p_playaction', 'p_playtechnology', 'p_stopaction',
+                                'p_stoptechnology', 'p_gameover');
 
     public $action;
 
@@ -286,6 +290,31 @@ class Action {
                 $data->currentlapse = 0;
             }
 
+        } else if ($gamekey == 'Pandemia') {
+            $game = new Pandemia($this->session->groupid);
+
+            $data->team = $game->summary->team;
+            $data->games = $game->getGames();
+            $data->timeframe = (int)$game->summary->timecontrol->timeframe;
+            $data->timelapse = (int)$game->getTimelapse();
+            $data->timeelapsed = $game->getTimeelapsed();
+            $data->lapses = (int)$game->getLapses();
+            $data->health = $game->getHealth();
+            $data->actions = $game->getActions($this->user->id);
+            $data->technologies = $game->getTechnologies($this->user->id);
+            $data->files = $game->getFiles();
+
+            $current = $game->currentGame();
+            if($current) {
+                $data->starttime = $current->starttime;
+                $data->duedate = $game->getDuedate();
+                $data->currentlapse = $game->getCurrentLapse();
+            } else {
+                $data->starttime = 0;
+                $data->duedate = 0;
+                $data->currentlapse = 0;
+            }
+
         }
 
 
@@ -371,22 +400,42 @@ class Action {
 
         $res = array();
 
-        $res['SmartCity'] = new \stdClass();
-        $matches = SmartCity::getMatches();
+        $gamekey = SocketSessions::getGameKey($this->from->resourceId);
+        $res[$gamekey] = new \stdClass();
+        if ($gamekey == 'SmartCity') {
+            $matches = SmartCity::getMatches();
 
-        $processed = 0;
-        foreach($matches as $match) {
-            $game = new SmartCity($match->groupid);
+            $processed = 0;
+            foreach($matches as $match) {
+                $game = new SmartCity($match->groupid);
 
-            $activegame = $game->currentGame();
+                $activegame = $game->currentGame();
 
-            if($game->summary->state != SmartCity::STATE_ENDED && $activegame) {
-                $game->cron($this);
-                $processed++;
+                if($game->summary->state != SmartCity::STATE_ENDED && $activegame) {
+                    $game->cron($this);
+                    $processed++;
+                }
             }
+
+        } else if ($gamekey == 'Pandemia') {
+
+            $matches = Pandemia::getMatches();
+
+            $processed = 0;
+            foreach($matches as $match) {
+                $game = new Pandemia($match->groupid);
+
+                $activegame = $game->currentGame();
+
+                if($game->summary->state != Pandemia::STATE_ENDED && $activegame) {
+                    $game->cron($this);
+                    $processed++;
+                }
+            }
+
         }
 
-        $res['SmartCity']->matches = $processed;
+        $res[$gamekey]->matches = $processed;
 
         $msg = $this->getResponse($res);
         $msg = json_encode($msg);
@@ -847,14 +896,335 @@ class Action {
         return true;
     }
 
+
+    // Specific Pandemia actions.
+    private function action_p_gamestart() {
+
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        if (!property_exists($this->request, 'data') ||
+                !property_exists($this->request->data, 'level')
+            ) {
+
+            Messages::error('fieldrequired', 'level', $this->from);
+        }
+
+        $game = new Pandemia($this->session->groupid);
+
+//        try {
+            $game->start($this->request->data->level);
+//         } catch (ByCodeException $ce) {
+//             Messages::error($ce->getMessage(), null, $this->from);
+//         }
+
+        $data = new \stdClass();
+        $data->level = $this->request->data->level;
+
+        $msg = $this->getResponse($data);
+        $msg = json_encode($msg);
+
+        $clients = SocketSessions::getClientsById($this->from->resourceId);
+        foreach ($clients as $client) {
+            if (SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
+                // Send to each client connected into same group, including the sender.
+                $client->send($msg);
+            }
+        }
+
+        Logging::trace(Logging::LVL_DETAIL, 'Game start with level: ' . $this->request->data->level);
+        $this->notifyActionToAll();
+
+        return true;
+    }
+
+    private function action_p_changetimeframe() {
+
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        if (!property_exists($this->request, 'data') ||
+                !property_exists($this->request->data, 'timeframe')
+            ) {
+
+            Messages::error('fieldrequired', 'timeframe', $this->from);
+        }
+
+        $game = new Pandemia($this->session->groupid);
+
+        $changed = false;
+        try {
+            $changed = $game->changeTimeframe($this->request->data->timeframe);
+        } catch (ByCodeException $ce) {
+            Messages::error($ce->getMessage(), null, $this->from);
+        }
+
+        if ($changed) {
+            $data = new \stdClass();
+            $data->timeframe = $this->request->data->timeframe;
+            $data->duedate = $game->getDuedate();
+            $data->lifetime = $game->getLifetime();
+
+            $msg = $this->getResponse($data);
+            $msg = json_encode($msg);
+
+            $clients = SocketSessions::getClientsById($this->from->resourceId);
+            foreach ($clients as $client) {
+                if (SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
+                    // Send to each client connected into same group, including the sender.
+                    $client->send($msg);
+                }
+            }
+
+            Logging::trace(Logging::LVL_DETAIL, 'Change the timeframe: ' . $this->request->data->timeframe);
+            $this->notifyActionToAll();
+        }
+
+        return true;
+    }
+
+    private function action_p_playaction() {
+
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        if (!property_exists($this->request, 'data') ||
+                !property_exists($this->request->data, 'id')
+            ) {
+
+            Messages::error('fieldrequired', 'id', $this->from);
+        }
+
+        if (property_exists($this->request->data, 'parameters')) {
+            $parameters = $this->request->data->parameters;
+        } else {
+            $parameters = array();
+        }
+
+        $game = new Pandemia($this->session->groupid);
+
+        $runningact = null;
+        try {
+            $runningact = $game->playAction($this->user->id, $this->request->data->id, $parameters);
+        } catch (ByCodeException $ce) {
+            Messages::error($ce->getMessage(), null, $this->from);
+        }
+
+        if ($runningact) {
+            $data = new \stdClass();
+            $data->id = $runningact->id;
+            $data->starttime = $runningact->starttime;
+            $data->resources = $game->availableResources();
+
+            $msg = $this->getResponse($data);
+            $msg = json_encode($msg);
+
+            $clients = SocketSessions::getClientsById($this->from->resourceId);
+            foreach ($clients as $client) {
+                if (SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
+                    // Send to each client connected into same group, including the sender.
+                    $client->send($msg);
+                }
+            }
+
+            Logging::trace(Logging::LVL_DETAIL, 'Play action: ' . $this->request->data->id);
+            $this->notifyActionToAll();
+        }
+
+        return true;
+    }
+
+    private function action_p_stopaction() {
+
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        if (!property_exists($this->request, 'data') ||
+                !property_exists($this->request->data, 'id')
+            ) {
+
+            Messages::error('fieldrequired', 'id', $this->from);
+        }
+
+        $game = new Pandemia($this->session->groupid);
+
+        $runningact = null;
+        try {
+            $stoped = $game->stopAction($this->user->id, $this->request->data->id);
+        } catch (ByCodeException $ce) {
+            Messages::error($ce->getMessage(), null, $this->from);
+        }
+
+        if ($stoped) {
+            $data = new \stdClass();
+            $data->id = $this->request->data->id;
+            $data->resources = $game->availableResources();
+
+            $msg = $this->getResponse($data);
+            $msg = json_encode($msg);
+
+            $clients = SocketSessions::getClientsById($this->from->resourceId);
+            foreach ($clients as $client) {
+                if (SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
+                    // Send to each client connected into same group, including the sender.
+                    $client->send($msg);
+                }
+            }
+
+            Logging::trace(Logging::LVL_DETAIL, 'Stop action: ' . $this->request->data->id);
+            $this->notifyActionToAll();
+        }
+
+        return true;
+    }
+
+    private function action_p_playtechnology() {
+
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        if (!property_exists($this->request, 'data') ||
+                !property_exists($this->request->data, 'id')
+            ) {
+
+            Messages::error('fieldrequired', 'id', $this->from);
+        }
+
+        if (property_exists($this->request->data, 'parameters')) {
+            $parameters = $this->request->data->parameters;
+        } else {
+            $parameters = array();
+        }
+
+        $game = new Pandemia($this->session->groupid);
+
+        $runningtech = null;
+        try {
+            $runningtech = $game->playTechnology($this->user->id, $this->request->data->id, $parameters);
+        } catch (ByCodeException $ce) {
+            Messages::error($ce->getMessage(), null, $this->from);
+        }
+
+        if ($runningtech) {
+            $data = new \stdClass();
+            $data->id = $runningtech->id;
+            $data->starttime = $runningtech->starttime;
+            $data->resources = $game->availableTechResources();
+
+            $msg = $this->getResponse($data);
+            $msg = json_encode($msg);
+
+            $clients = SocketSessions::getClientsById($this->from->resourceId);
+            foreach ($clients as $client) {
+                if (SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
+                    // Send to each client connected into same group, including the sender.
+                    $client->send($msg);
+                }
+            }
+
+            Logging::trace(Logging::LVL_DETAIL, 'Play technology: ' . $this->request->data->id);
+            $this->notifyActionToAll();
+        }
+
+        return true;
+    }
+
+    private function action_p_stoptechnology() {
+
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        if (!property_exists($this->request, 'data') ||
+                !property_exists($this->request->data, 'id')
+            ) {
+
+            Messages::error('fieldrequired', 'id', $this->from);
+        }
+
+        $game = new Pandemia($this->session->groupid);
+
+        $runningtech = null;
+        try {
+            $stoped = $game->stopTechnology($this->user->id, $this->request->data->id);
+        } catch (ByCodeException $ce) {
+            Messages::error($ce->getMessage(), null, $this->from);
+        }
+
+        if ($stoped) {
+            $data = new \stdClass();
+            $data->id = $this->request->data->id;
+            $data->resources = $game->availableTechResources();
+
+            $msg = $this->getResponse($data);
+            $msg = json_encode($msg);
+
+            $clients = SocketSessions::getClientsById($this->from->resourceId);
+            foreach ($clients as $client) {
+                if (SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
+                    // Send to each client connected into same group, including the sender.
+                    $client->send($msg);
+                }
+            }
+
+            Logging::trace(Logging::LVL_DETAIL, 'Stop technology: ' . $this->request->data->id);
+            $this->notifyActionToAll();
+        }
+
+        return true;
+    }
+
+    private function action_p_gameover() {
+
+        if (!$this->session->groupid) {
+            Messages::error('notgroupnotteam', null, $this->from);
+        }
+
+        $game = new Pandemia($this->session->groupid);
+
+        try {
+            $ended = $game->gameover();
+        } catch (ByCodeException $ce) {
+            Messages::error($ce->getMessage(), null, $this->from);
+        }
+
+        if ($ended) {
+            $data = new \stdClass();
+            $data->reason = $ended->reason;
+            $data->endlapse = $ended->endlapse;
+
+            $msg = $this->getResponse($data);
+            $msg = json_encode($msg);
+
+            $clients = SocketSessions::getClientsById($this->from->resourceId);
+            foreach ($clients as $client) {
+                if (SocketSessions::getSSById($client->resourceId)->groupid == $this->session->groupid) {
+                    // Send to each client connected into same group, including the sender.
+                    $client->send($msg);
+                }
+            }
+
+            Logging::trace(Logging::LVL_DETAIL, 'Gameover: ' . $ended->reason);
+            $this->notifyActionToAll();
+        }
+
+        return true;
+    }
+
+
     // It's a special action because this is a cron's action.
-    public function sc_actioncompleted($requestdata) {
+    public function cron_actioncompleted($requestdata) {
 
         $data = new \stdClass();
         $data->id = $requestdata->id;
         $data->resources = $requestdata->resources;
 
-        $msg = $this->getResponse($data, 'sc_actioncompleted');
+        $msg = $this->getResponse($data, 'cron_actioncompleted');
         $msg = json_encode($msg);
 
         $clients = SocketSessions::getClientsById($this->from->resourceId);
@@ -877,14 +1247,14 @@ class Action {
     }
 
     // It is a special action because is used by cron.
-    public function sc_technologycompleted($requestdata) {
+    public function cron_technologycompleted($requestdata) {
 
         $data = new \stdClass();
         $data->id = $requestdata->id;
         $data->resources = $requestdata->resources;
         $data->files = $requestdata->files;
 
-        $msg = $this->getResponse($data, 'sc_technologycompleted');
+        $msg = $this->getResponse($data, 'cron_technologycompleted');
         $msg = json_encode($msg);
 
         $clients = SocketSessions::getClientsById($this->from->resourceId);
@@ -907,7 +1277,7 @@ class Action {
     }
 
     // It is a special action because is used by cron.
-    public function sc_healthupdate($requestdata) {
+    public function cron_healthupdate($requestdata) {
 
         $data = new \stdClass();
         $data->general = $requestdata->general;
@@ -915,7 +1285,7 @@ class Action {
         $data->lastmeasured = $requestdata->lastmeasured;
         $data->lifetime = $requestdata->lifetime;
 
-        $msg = $this->getResponse($data, 'sc_healthupdate');
+        $msg = $this->getResponse($data, 'cron_healthupdate');
         $msg = json_encode($msg);
 
         $clients = SocketSessions::getClientsById($this->from->resourceId);
@@ -929,20 +1299,20 @@ class Action {
 
         Logging::trace(Logging::LVL_DETAIL, 'Health updated');
 
-        // Not message by health update.
+        // Not chat message by health update.
 
         return true;
     }
 
     // It is a special action because is used by cron.
-    public function sc_lapsechanged($requestdata) {
+    public function cron_lapsechanged($requestdata) {
 
         $data = new \stdClass();
         $data->lapse = $requestdata->lapse;
         $data->lifetime = $requestdata->lifetime;
         $data->score = $requestdata->score;
 
-        $msg = $this->getResponse($data, 'sc_lapsechanged');
+        $msg = $this->getResponse($data, 'cron_lapsechanged');
         $msg = json_encode($msg);
 
         $clients = SocketSessions::getClientsById($this->from->resourceId);
@@ -956,19 +1326,19 @@ class Action {
 
         Logging::trace(Logging::LVL_DETAIL, 'Lapse changed');
 
-        // Not message by health update.
+        // Not chat message by health update.
 
         return true;
     }
 
     // It is a special action because is used by cron.
-    public function sc_autogameover($requestdata) {
+    public function cron_autogameover($requestdata) {
 
         $data = new \stdClass();
         $data->reason = $requestdata->reason;
         $data->endlapse = $requestdata->endlapse;
 
-        $msg = $this->getResponse($data, 'sc_gameover');
+        $msg = $this->getResponse($data, 'cron_autogameover');
         $msg = json_encode($msg);
 
         $clients = SocketSessions::getClientsById($this->from->resourceId);

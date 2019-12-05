@@ -85,6 +85,14 @@ class SocketSessions {
         return !isset($session) ? null : $session->clients;
     }
 
+    public static function getUIDById($id) {
+        if (!isset(self::$_resources[$id])) {
+            return null;
+        }
+
+        return self::$_resources[$id];
+    }
+
     public static function setSettings($settings) {
 
         self::$_settings = $settings;

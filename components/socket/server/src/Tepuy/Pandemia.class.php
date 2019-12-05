@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Library of internal classes and functions for component socket into local Tepuy plugin
+ * Main class to game Pandemia
  *
  * @package   local_tepuy
  * @copyright 2019 David Herney - cirano
@@ -24,9 +24,9 @@
 
 namespace Tepuy;
 
-class SmartCity {
+class Pandemia {
 
-    const SOURCE_DATA = __DIR__ . "/assets/smartcity_data.json";
+    const SOURCE_DATA = __DIR__ . "/assets/pandemia_data.json";
 
     const MAX_GAMES = 2;
 
@@ -61,13 +61,13 @@ class SmartCity {
             self::$_loadeddata = self::loadData();
         }
 
-        if (count(SmartCityLevels::$LEVELS) == 0) {
-            SmartCityLevels::initLevels();
+        if (count(PandemiaLevels::$LEVELS) == 0) {
+            PandemiaLevels::initLevels();
         }
 
         $this->groupid = $groupid;
 
-        $this->summary = $DB->get_record('local_tepuy_gamesmartcity', array('groupid' => $groupid));
+        $this->summary = $DB->get_record('local_tepuy_gamepandemia', array('groupid' => $groupid));
 
         if (!$this->summary) {
             $this->summary = $this->init();
@@ -75,16 +75,16 @@ class SmartCity {
 
         $this->summary->team = json_decode($this->summary->team);
         $this->summary->games = json_decode($this->summary->games);
-        $this->summary->timecontrol = new SmartCityTimecontrol($this->summary->timecontrol);
+        $this->summary->timecontrol = new PandemiaTimecontrol($this->summary->timecontrol);
 
         $this->_currentgame = $this->currentGame();
 
         if ($this->_currentgame) {
             $this->_currentrunning = $this->currentRunning();
-            $this->_level = SmartCityLevels::$LEVELS[$this->_currentgame->level];
+            $this->_level = PandemiaLevels::$LEVELS[$this->_currentgame->level];
 
             $params = array('parentid' => $this->summary->id, 'game' => $this->_currentgame->id);
-            $this->_lapses = $DB->get_records('local_tepuy_gamesmartcity_lapses', $params, 'lapse DESC');
+            $this->_lapses = $DB->get_records('local_tepuy_gamepandemia_lapses', $params, 'lapse DESC');
 
             $this->_currentlapse = current($this->_lapses);
 
@@ -98,7 +98,7 @@ class SmartCity {
             }
 
         } else {
-            $this->_level = SmartCityLevels::$LEVELS[SmartCityLevels::DEFAULTLEVEL];
+            $this->_level = PandemiaLevels::$LEVELS[PandemiaLevels::DEFAULTLEVEL];
         }
     }
 
@@ -121,7 +121,7 @@ class SmartCity {
         $params = array("parentid" => $this->summary->id,
                         "game" => $this->_currentgame->id);
 
-        $running = $DB->get_record('local_tepuy_gamesmartcity_running', $params);
+        $running = $DB->get_record('local_tepuy_gamepandemia_running', $params);
 
         if ($running) {
             $running->actions = json_decode($running->actions);
@@ -154,13 +154,13 @@ class SmartCity {
             $newgame->id = $i;
             $newgame->state = self::STATE_LOCKED;
             $newgame->score = 0;
-            $newgame->level = SmartCityLevels::DEFAULTLEVEL;
+            $newgame->level = PandemiaLevels::DEFAULTLEVEL;
             $newgame->actions = $actions;
             $newgame->technologies = $techs;
             $games[] = $newgame;
         }
 
-        $timecontrol = new SmartCityTimecontrol();
+        $timecontrol = new PandemiaTimecontrol();
 
         $data = new \stdClass();
         $data->groupid = $this->groupid;
@@ -168,7 +168,7 @@ class SmartCity {
         $data->games = json_encode($games);
         $data->timecontrol = json_encode($timecontrol);
 
-        $data->id = $DB->insert_record('local_tepuy_gamesmartcity', $data, true);
+        $data->id = $DB->insert_record('local_tepuy_gamepandemia', $data, true);
 
         return $data;
     }
@@ -182,11 +182,11 @@ class SmartCity {
             throw new ByCodeException('errorgamestart');
         }
 
-        if (!SmartCityLevels::isValid($level)) {
-            $level = SmartCityLevels::DEFAULTLEVEL;
+        if (!PandemiaLevels::isValid($level)) {
+            $level = PandemiaLevels::DEFAULTLEVEL;
         }
 
-        $this->summary->timecontrol = new SmartCityTimecontrol();
+        $this->summary->timecontrol = new PandemiaTimecontrol();
         $this->summary->timecontrol->starttime = time();
         $this->summary->timecontrol->lastmeasured = 0;
         $this->summary->timecontrol->lastcalc = $this->summary->timecontrol->starttime;
@@ -205,7 +205,7 @@ class SmartCity {
         $data->games = json_encode($this->summary->games);
         $data->timecontrol = json_encode($this->summary->timecontrol);
 
-        $DB->update_record('local_tepuy_gamesmartcity', $data);
+        $DB->update_record('local_tepuy_gamepandemia', $data);
 
 
         // Insert the first lapse with default values.
@@ -229,7 +229,7 @@ class SmartCity {
         $data->reducer = 0;
         $data->timemodify = time();
 
-        $DB->insert_record('local_tepuy_gamesmartcity_lapses', $data);
+        $DB->insert_record('local_tepuy_gamepandemia_lapses', $data);
 
 
         // Insert an empty running record.
@@ -240,7 +240,7 @@ class SmartCity {
         $data->technologies = "[]";
         $data->availablefiles = "[]";
 
-        $DB->insert_record('local_tepuy_gamesmartcity_running', $data);
+        $DB->insert_record('local_tepuy_gamepandemia_running', $data);
 
 
         return true;
@@ -252,7 +252,7 @@ class SmartCity {
 
         $duein1x = $duration - $this->getTimeelapsed();
 
-        $due = SmartCityTimecontrol::time1xToX($duein1x, $this->summary->timecontrol->timeframe);
+        $due = PandemiaTimecontrol::time1xToX($duein1x, $this->summary->timecontrol->timeframe);
 
         return time() + round($due);
     }
@@ -273,7 +273,7 @@ class SmartCity {
             return $res;
         }
 
-        $res->general = (int)$this->_currentlapse->score;
+        $res->general = 100 - (int)$this->_currentlapse->score;
 
         $res->details = array();
 
@@ -285,13 +285,13 @@ class SmartCity {
         foreach ($lapse->zones as $zone) {
             $one = new \stdClass();
             $one->zone = $zone->zone;
-            $one->value = round($zone->value * 100);
+            $one->value = 100 - round($zone->value * 100);
             $res->details[] = $one;
         }
 
         $res->lastmeasured = $this->summary->timecontrol->lastmeasured;
 
-        $lifetime = SmartCityTimecontrol::time1xToX($this->estimateEndScore(), $this->summary->timecontrol->timeframe);
+        $lifetime = PandemiaTimecontrol::time1xToX($this->estimateEndScore(), $this->summary->timecontrol->timeframe);
 
         $res->lifetime = $this->getLifetime();
 
@@ -302,7 +302,7 @@ class SmartCity {
 
         $lifetime = $this->estimateEndScore() - ($this->getTimeelapsed() % $this->_level->timelapse);
 
-        $lifetime = SmartCityTimecontrol::time1xToX($lifetime, $this->summary->timecontrol->timeframe);
+        $lifetime = PandemiaTimecontrol::time1xToX($lifetime, $this->summary->timecontrol->timeframe);
 
         return round($lifetime);
     }
@@ -429,7 +429,7 @@ class SmartCity {
         $params['id'] = $this->summary->id;
         $params['timecontrol'] = json_encode($this->summary->timecontrol);
 
-        return $DB->update_record('local_tepuy_gamesmartcity', $params);
+        return $DB->update_record('local_tepuy_gamepandemia', $params);
     }
 
     public function playAction($userid, $actid, $parameters) {
@@ -481,7 +481,7 @@ class SmartCity {
         $params['id'] = $this->_currentrunning->id;
         $params['actions'] = json_encode($this->_currentrunning->actions);
 
-        $DB->update_record('local_tepuy_gamesmartcity_running', $params);
+        $DB->update_record('local_tepuy_gamepandemia_running', $params);
 
         return $runningact;
     }
@@ -521,7 +521,7 @@ class SmartCity {
         $params['id'] = $this->_currentrunning->id;
         $params['actions'] = json_encode($this->_currentrunning->actions);
 
-        $DB->update_record('local_tepuy_gamesmartcity_running', $params);
+        $DB->update_record('local_tepuy_gamepandemia_running', $params);
 
         return true;
     }
@@ -569,7 +569,7 @@ class SmartCity {
         $params['id'] = $this->_currentrunning->id;
         $params['technologies'] = json_encode($this->_currentrunning->technologies);
 
-        $DB->update_record('local_tepuy_gamesmartcity_running', $params);
+        $DB->update_record('local_tepuy_gamepandemia_running', $params);
 
         return $runningtech;
     }
@@ -615,7 +615,7 @@ class SmartCity {
         $params['id'] = $this->_currentrunning->id;
         $params['technologies'] = json_encode($this->_currentrunning->technologies);
 
-        $DB->update_record('local_tepuy_gamesmartcity_running', $params);
+        $DB->update_record('local_tepuy_gamepandemia_running', $params);
 
         return true;
     }
@@ -668,7 +668,7 @@ class SmartCity {
 
         $params['games'] = json_encode($this->summary->games);
 
-        return $DB->update_record('local_tepuy_gamesmartcity', $params);
+        return $DB->update_record('local_tepuy_gamepandemia', $params);
 
     }
 
@@ -899,7 +899,7 @@ class SmartCity {
             $data->timemodify = $newlapse->timemodify;
 
             // Insert the calculated lapse.
-            $newlapse->id = $DB->insert_record('local_tepuy_gamesmartcity_lapses', $data, true);
+            $newlapse->id = $DB->insert_record('local_tepuy_gamepandemia_lapses', $data, true);
             $this->_currentlapse = $newlapse;
             $this->_lapses[] = $newlapse;
 
@@ -913,13 +913,13 @@ class SmartCity {
                     continue;
                 }
 
-                if ($tech->id == 't25') {
+                if ($tech->id == 't24') {
                     $this->summary->timecontrol->lastmeasured = $newlapse->lapse;
 
                     $params = array();
                     $params['id'] = $this->_currentrunning->id;
                     $params['timecontrol'] = json_encode($this->summary->timecontrol);
-                    $DB->update_record('local_tepuy_gamesmartcity', $params);
+                    $DB->update_record('local_tepuy_gamepandemia', $params);
 
                     $requestdata = $this->getHealth();
                     $requestdata->groupid = $this->groupid;
@@ -995,14 +995,14 @@ class SmartCity {
         $params['technologies'] = json_encode($this->_currentrunning->technologies);
         $params['availablefiles'] = json_encode($this->_currentrunning->availablefiles);
 
-        $DB->update_record('local_tepuy_gamesmartcity_running', $params);
+        $DB->update_record('local_tepuy_gamepandemia_running', $params);
 
     }
 
     public static function getMatches() {
         global $DB;
 
-        return $DB->get_records('local_tepuy_gamesmartcity', null, '', 'id, groupid, state');
+        return $DB->get_records('local_tepuy_gamepandemia', null, '', 'id, groupid, state');
     }
 
     private function refreshTimeelapsed() {
@@ -1022,7 +1022,7 @@ class SmartCity {
 
         $new = ($calctime - $this->summary->timecontrol->lastcalc);
         $new = $this->summary->timecontrol->timeelapsed +
-                    SmartCityTimecontrol::timeXTo1x($new, $this->summary->timecontrol->timeframe);
+                    PandemiaTimecontrol::timeXTo1x($new, $this->summary->timecontrol->timeframe);
 
         $this->summary->timecontrol->timeelapsed = $new;
         $this->summary->timecontrol->lastcalc = $calctime;
@@ -1031,7 +1031,7 @@ class SmartCity {
         $params['id'] = $this->summary->id;
         $params['timecontrol'] = json_encode($this->summary->timecontrol);
 
-        return $DB->update_record('local_tepuy_gamesmartcity', $params);
+        return $DB->update_record('local_tepuy_gamepandemia', $params);
     }
 
     public function getTimeelapsed() {
@@ -1148,7 +1148,7 @@ class SmartCity {
     private function getConsumptionFactor($P, $DFp, $NA) {
         $Ex = 0;
 
-        $DFp = $DFp === null ? 0 : $DFp;
+        $DFp = $DFp === null ? 0.1 : $DFp;
 // //          echo "DF: ";
 // //          var_dump($DFp);
 // //          echo "\n";
@@ -1226,15 +1226,15 @@ class SmartCity {
         $json = file_get_contents(self::SOURCE_DATA);
         $data = json_decode($json);
 
-        self::$_data = new SmartCityData($data->actions, $data->technologies, $data->files);
-        Logging::trace(Logging::LVL_DETAIL, 'Data for SmartCity game loaded.');
+        self::$_data = new PandemiaData($data->actions, $data->technologies, $data->files);
+        Logging::trace(Logging::LVL_DETAIL, 'Data for Pandemia game loaded.');
 
         return true;
     }
 }
 
 
-class SmartCityLevels {
+class PandemiaLevels {
 
     public static $LEVELS = array();
     const DEFAULTLEVEL = 1;
@@ -1242,18 +1242,18 @@ class SmartCityLevels {
     // Levels data.
     public static function initLevels() {
 
-        self::$LEVELS[0] = new SmartCityLevel();
+        self::$LEVELS[0] = new PandemiaLevel();
 
-        $level = new SmartCityLevel();
+        $level = new PandemiaLevel();
         $level->level = 1;
-        $level->cr = 3;
-        $level->ea = 10;
+        $level->cr = 4;
+        $level->ea = 6;
         self::$LEVELS[1] = $level;
 
-        $level = new SmartCityLevel();
+        $level = new PandemiaLevel();
         $level->level = 2;
-        $level->cr = 4;
-        $level->ea = 12;
+        $level->cr = 5;
+        $level->ea = 7;
         self::$LEVELS[2] = $level;
     }
 
@@ -1262,39 +1262,35 @@ class SmartCityLevels {
     }
 }
 
-class SmartCityLevel {
+class PandemiaLevel {
 
     public $level = 0;
 
-    public $score = 100;
+    public $score = 89;
 
-    public $lapses = 52;
+    public $lapses = 48;
 
-    public $timelapse = 3600;
+    public $timelapse = 5;
 
     public $resources = array("human" => 100, "physical" => 100, "energy" => 100);
 
     public $techresources = array("capacity" => 100);
 
-    // Initial value for zones.
-    // Is required really or with $zones is sufficient?
-    public $ivz = 50;
-
-    public $zones = array(0.5, 0.5, 0.5, 0.5, 0.5, 0.5);
+    public $zones = array(0.74, 0.9, 0.8, 0.8, 0.9, 0.77);
 
     // Constant of reality.
-    // [2, 3, 4] = [easy, medium, hard]
-    public $cr = 2.5;
+    // [3, 4, 5] = [easy, medium, hard]
+    public $cr = 3;
 
     // Minimum expected actions.
-    public $ea = 7;
+    public $ea = 4;
 
     // Depreciation softener.
     public $ds = 10;
 
 }
 
-class SmartCityData {
+class PandemiaData {
 
     public $actions;
     public $actionsbyid;
@@ -1474,7 +1470,7 @@ class SmartCityData {
     }
 }
 
-class SmartCityTimecontrol {
+class PandemiaTimecontrol {
 
     public $timeframe = 1;
 
