@@ -1270,7 +1270,7 @@ class PandemiaLevel {
 
     public $lapses = 48;
 
-    public $timelapse = 5;
+    public $timelapse = 3600;
 
     public $resources = array("human" => 100, "physical" => 100, "energy" => 100);
 
