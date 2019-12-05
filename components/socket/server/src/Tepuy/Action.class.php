@@ -913,11 +913,11 @@ class Action {
 
         $game = new Pandemia($this->session->groupid);
 
-//        try {
+        try {
             $game->start($this->request->data->level);
-//         } catch (ByCodeException $ce) {
-//             Messages::error($ce->getMessage(), null, $this->from);
-//         }
+        } catch (ByCodeException $ce) {
+            Messages::error($ce->getMessage(), null, $this->from);
+        }
 
         $data = new \stdClass();
         $data->level = $this->request->data->level;
