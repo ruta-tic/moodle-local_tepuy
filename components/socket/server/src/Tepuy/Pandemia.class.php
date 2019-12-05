@@ -274,6 +274,7 @@ class Pandemia {
         }
 
         $res->general = 100 - (int)$this->_currentlapse->score;
+        $res->general = $res->general > 100 ? 100 : $res->general;
 
         $res->details = array();
 
@@ -870,11 +871,17 @@ class Pandemia {
 
             $newlapse->newresources = $newresources;
 
+            $zones = array();
+            foreach($this->_currentlapse->zones as $zone) {
+                $zones[] = $zone->value;
+            }
+
             $newlapse->score = $this->calcResources($newlapse->newresources,
                                                     $newlapse->lapse,
                                                     $profit,
                                                     $this->_currentlapse->reducer,
-                                                    $numberactions);
+                                                    $numberactions,
+                                                    $zones);
 
             $newlapse->reducer = $this->calcDiscontent($this->_currentlapse->reducer, $numberactions);
 
@@ -949,8 +956,10 @@ class Pandemia {
             }
 
 
+            $score = 100 - round($newlapse->score);
+            $score = $score > 100 ? 100 : $score;
             $requestdata = array(
-                    'score' => round($newlapse->score),
+                    'score' => $score,
                     'lapse' => $newlapse->lapse,
                     'lifetime' => $this->getLifetime(),
                     'groupid' => $this->groupid
@@ -1077,14 +1086,29 @@ class Pandemia {
         }
 
         $end = 0;
+        $DFp = 0;
         $DF = $this->_currentlapse->reducer;
+
+        $zones = array();
+        foreach($this->_currentlapse->zones as $zone) {
+            $zones[] = $zone->value;
+        }
 
         while ($R > 0 && $end < ($this->_level->lapses * 2)) {
             // $FC is the consumption factor.
-            $FC = $this->getConsumptionFactor($profit, $DF, $numberactions);
+
+            $FC = $this->getConsumptionFactor($profit, $DF, $numberactions, $zones);
 
             $R -= ($D * $FC);
 
+            foreach($zones as $key => $zonevalue) {
+                $value = $profit[$key];
+                $value = $zonevalue + $value - ($DF - $DFp);
+                $value = $value < 0 ? 0 : ($value > 1 ? 1 : $value);
+                $zones[$key] = round($value, 2);
+            }
+
+            $DFp = $DF;
             $DF = $this->calcDiscontent($DF, $numberactions);
             $end++;
         }
@@ -1106,7 +1130,7 @@ class Pandemia {
      * @return int resources for the lapse $l.
      *
      */
-    private function calcResources($NR, $l, $P, $DFp, $NA) {
+    private function calcResources($NR, $l, $P, $DFp, $NA, $zones) {
 // //          echo "P: ";
 // //          var_dump($P);
 // //          echo "\n";
@@ -1124,7 +1148,7 @@ class Pandemia {
 // //          var_dump($DFp);
 // //          echo "\n";
 
-        $FC = $this->getConsumptionFactor($P, $DFp, $NA);
+        $FC = $this->getConsumptionFactor($P, $DFp, $NA, $zones);
 // //          echo "FC: ";
 // //          var_dump($FC);
 // //          echo "\n";
@@ -1145,7 +1169,7 @@ class Pandemia {
 
     }
 
-    private function getConsumptionFactor($P, $DFp, $NA) {
+    private function getConsumptionFactor($P, $DFp, $NA, $zones) {
         $Ex = 0;
 
         $DFp = $DFp === null ? 0.1 : $DFp;
@@ -1155,7 +1179,7 @@ class Pandemia {
 
         foreach ($P as $key => $value) {
 
-            $improvement = $this->_level->zones[$key] + $value;
+            $improvement = $zones[$key] + $value;
             $maximprovement = ($improvement > 1 ? 1 : $improvement);
 
             $Bx = ($maximprovement < 0 ? 0 : $maximprovement) - $DFp;
@@ -1248,14 +1272,14 @@ class PandemiaLevels {
         $level->score = 89;
         $level->level = 1;
         $level->cr = 4;
-        $level->ea = 6;
+        $level->ea = 4;
         self::$LEVELS[1] = $level;
 
         $level = new PandemiaLevel();
         $level->score = 85;
         $level->level = 2;
         $level->cr = 5;
-        $level->ea = 7;
+        $level->ea = 5;
         self::$LEVELS[2] = $level;
     }
 
@@ -1285,7 +1309,7 @@ class PandemiaLevel {
     public $cr = 3;
 
     // Minimum expected actions.
-    public $ea = 4;
+    public $ea = 3;
 
     // Depreciation softener.
     public $ds = 10;
