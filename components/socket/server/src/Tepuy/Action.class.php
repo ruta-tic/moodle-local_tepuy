@@ -40,6 +40,8 @@ class Action {
                                 'p_gamestart', 'p_changetimeframe', 'p_playaction', 'p_playtechnology', 'p_stopaction',
                                 'p_stoptechnology', 'p_gameover');
 
+    const DEFAULTACTIONS = array('chatmsg', 'chathistory', 'playerconnected', 'playerdisconnected', 'execron');
+
     public $action;
 
     public $request;
@@ -61,6 +63,8 @@ class Action {
             }
 
             $gameactions = SocketSessions::getGameActions($from->resourceId);
+            $gameactions = array_merge($gameactions, self::DEFAULTACTIONS);
+
             if (!in_array($request->action, $gameactions)) {
                 Messages::error('invalidaction', $request->action, $from);
             }
@@ -344,7 +348,7 @@ class Action {
 
     private function action_playerconnected() {
 
-        if (!$this->session->groupid) {
+        if (!isset($this->session->groupid)) {
             Messages::error('notgroupnotteam', null, $this->from);
         }
 
